@@ -2,13 +2,13 @@
 # Site settings
 # -----------------------------------------------------------------------------
 
-title: Jiawei's Homepage # the website title (if blank, full name will be used instead)
+title: Jiawei Zhang # the website title (if blank, full name will be used instead)
 first_name: Jiawei
 middle_name: Jeven
 last_name: Zhang
 email: jeven-z@hotmail.com
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
-  Always a student who loves machine learning.
+  Always be a student who loves machine learning.
 footer_text: >
   Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
   Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
@@ -84,7 +84,7 @@ panelbear_analytics:  # panelbear analytics site ID (format: XXXXXXXXX)
 # Blog
 # -----------------------------------------------------------------------------
 
-blog_name: al-folio  # your blog must have a name for it to show up in the nav bar
+blog_name: Jiawei's Blog  # your blog must have a name for it to show up in the nav bar
 blog_description: a simple whitespace theme for academics
 permalink: /blog/:year/:title/
 
@@ -189,7 +189,7 @@ sass:
 # -----------------------------------------------------------------------------
 
 jekyll-archives:
-  enabled: [year, tags, categories] # enables year, tag and category archives (remove if you need to disable one of them). 
+  enabled: [year, tags, categories] # enables year, tag and category archives (remove if you need to disable one of them).
   layouts:
     year: archive-year
     tag: archive-tag
@@ -205,8 +205,8 @@ jekyll-archives:
 
 scholar:
 
-  last_name: Einstein
-  first_name: [Albert, A.]
+  last_name: Zhang
+  first_name: [Jeven, A.]
 
   style: apa
   locale: en
