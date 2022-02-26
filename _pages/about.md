@@ -8,8 +8,8 @@ profile:
   align: right
   image: prof_pic.jpg
   address: >
-    <p>High-tech Incubator</p>
-    <p>1480 North Tianfu Avenue</p>
+    <p>High-tech Industry Incubation Park</p>
+    <p>No.1480, North Tianfu Avenue</p>
     <p>Chengdu, 610000</p>
 
 news: true  # includes a list of news items
