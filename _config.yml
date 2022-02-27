@@ -55,7 +55,7 @@ og_image: # The site-wide (default for all links) Open Graph preview image
 # Social integration
 # -----------------------------------------------------------------------------
 
-github_username: # your GitHub user name
+github_username: jevenzh # your GitHub user name
 gitlab_username: # your GitLab user name
 twitter_username: # your Twitter handle
 linkedin_username: jiawei-zhang-6183bb93 # your LinkedIn user name
@@ -84,8 +84,8 @@ panelbear_analytics:  # panelbear analytics site ID (format: XXXXXXXXX)
 # Blog
 # -----------------------------------------------------------------------------
 
-blog_name: Jiawei's Blog  # your blog must have a name for it to show up in the nav bar
-blog_description: a simple whitespace theme for academics
+blog_name: jiawei's learning notes  # your blog must have a name for it to show up in the nav bar
+blog_description: a place for thoughts and inspirations in the journey of learning
 permalink: /blog/:year/:title/
 
 # Pagination
@@ -93,7 +93,7 @@ pagination:
   enabled: true
 
 # Comments
-disqus_shortname: al-folio # put your disqus shortname
+disqus_shortname: jevenzh # put your disqus shortname
 # https://help.disqus.com/en/articles/1717111-what-s-a-shortname
 
 # -----------------------------------------------------------------------------
@@ -206,7 +206,7 @@ jekyll-archives:
 scholar:
 
   last_name: Zhang
-  first_name: [Jeven, A.]
+  first_name: [Jiawei, A.]
 
   style: apa
   locale: en
