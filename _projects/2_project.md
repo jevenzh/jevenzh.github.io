@@ -1,6 +1,6 @@
 ---
 layout: page
-title: project 2
+title: Deep Learning Toolkit Development for Speech Recognition
 description: a project with a background image
 img: assets/img/3.jpg
 importance: 2

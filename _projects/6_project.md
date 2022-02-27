@@ -1,6 +1,6 @@
 ---
 layout: page
-title: project 6
+title: Invasive Plant Detection Based on Deep Neural Networks
 description: a project with no image
 img:
 importance: 4
