@@ -2,7 +2,7 @@
 # Site settings
 # -----------------------------------------------------------------------------
 
-title: Jiawei Zhang # the website title (if blank, full name will be used instead)
+title: Jiawei (Jeven) Zhang # the website title (if blank, full name will be used instead)
 first_name: Jiawei
 middle_name: Jeven
 last_name: Zhang
@@ -85,7 +85,7 @@ panelbear_analytics:  # panelbear analytics site ID (format: XXXXXXXXX)
 # -----------------------------------------------------------------------------
 
 blog_name: Jiawei's notes  # your blog must have a name for it to show up in the nav bar
-blog_description: a place for thoughts and inspirations in the journey of learning
+blog_description: recording thoughts and inspirations in the journey
 permalink: /blog/:year/:title/
 
 # Pagination
@@ -206,7 +206,7 @@ jekyll-archives:
 scholar:
 
   last_name: Zhang
-  first_name: [Jiawei, A.]
+  first_name: [Jiawei, W.]
 
   style: apa
   locale: en
