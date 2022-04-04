@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: Graduated from <a href='https://www.liverpool.ac.uk'>UoL</a> | “Science is not only a disciple of reason but also one of romance and passion.”
+subtitle: Graduated from <a href='https://www.liverpool.ac.uk'>UoL</a>   | these days of peace fortures learning. <br/> “Science is not only a disciple of reason but also one of romance and passion.”
 
 profile:
   align: right
