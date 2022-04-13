@@ -2,16 +2,16 @@
 <html lang="en">
 
   <!-- Head -->
-  <head><meta http-equiv="refresh" content="3; url=https://jevenzh.github.io/" />    <!-- Metadata, OpenGraph and Schema.org -->
+  <head>    <!-- Metadata, OpenGraph and Schema.org -->
     
 
     <!-- Standard metadata -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Jiawei (Jeven) Zhang | Page not found</title>
+    <title>Jiawei (Jeven) Zhang | Thoughts about AGI</title>
     <meta name="author" content="Jiawei Jeven Zhang" />
-    <meta name="description" content="Looks like there has been a mistake. Nothing exists here." />
+    <meta name="description" content="you can also redirect to assets like pdf" />
     <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website" />
 
 
@@ -32,7 +32,7 @@
     <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
     
     <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="canonical" href="https://jevenzh.github.io/404.html">
+    <link rel="canonical" href="https://jevenzh.github.io/blog/2021/agi/">
     
     <!-- Dark Mode -->
     
@@ -71,7 +71,7 @@
               </li>
               
               <!-- Blog -->
-              <li class="nav-item ">
+              <li class="nav-item active">
                 <a class="nav-link" href="/blog/">blog</a>
               </li>
 
@@ -98,20 +98,61 @@
 
     <!-- Content -->
     <div class="container mt-5">
-      <!-- page.html -->
-        <div class="post">
+      <!-- _layouts/post.html -->
 
-          <header class="post-header">
-            <h1 class="post-title">Page not found</h1>
-            <p class="post-description">Looks like there has been a mistake. Nothing exists here.</p>
-          </header>
+<div class="post">
 
-          <article>
-            <p>You will be redirected to the main page within 3 seconds. If not redirected, please click <a href="https://jevenzh.github.io/">here</a>.</p>
+  <header class="post-header">
+    <h1 class="post-title">Thoughts about AGI</h1>
+    <p class="post-meta">July 4, 2021</p>
+    <p class="post-tags">
+      <a href="/blog/2021"> <i class="fas fa-calendar fa-sm"></i> 2021 </a>
 
-          </article>
+    </p>
+  </header>
 
-        </div>
+  <article class="post-content">
+    <p>Among all the approaches that dedicated to achieving AGI, my focus is on the multi-modal disentangled representation learning. I will elaborate my perspective in the following section based on three papers: the consciousness prior, contrastive predictive coding (CPC) and hierarchical representation learning (HRL).</p>
+
+<p>Firstly, Yoshua Bengio has proposed a theory of learning representation based on a more biological/psychological plausible prior, which is called the consciousness prior. It started by asking what’s wrong with the current deep learning, in which we learn the representation of our data/observations using deep neural networks? As established in many state-of-the-art works in many AI subfields, current deep neural networks are able to learn effective “high-level” representations for classification or reconstruction (generative) tasks. However, such distributed dense representations make neural networks hard to understand, like a “black box”, therefore it is crucial to disentangle abstract factors from each other in the distributed representation of high-level features. The consciousness prior proposes a methodology to implement such disentanglement by hypothesizing the representation in a conscious state should be of low capacity, for instance, a low-dimensional thought vector. All predictions or reconstruction tasks should be conducted in this space, and those lower stream tasks are supposed to be learned in a much more efficient manner in the low-dimensional space.</p>
+
+<p>Moreover, I would like to look into the question of how to implement such prior. CPC and hierarchical reinforcement learning (HRL), in my opinion, are exactly two of the all possible approaches. They are two main shared key ideas in these two works that match the assumption of the consciousness prior, one is the higher-level abstraction, another is the indirect objective - the mutual information. Note that such “off-task” objective, i.e. the use of mutual information as part of the objective, is very similar to the verifier networks in the consciousness prior theory, it indicates correlations of observations in different time step (temporal dimension), which lies in the very core of the world of coherence. On the other hand, what is the purpose of the higher-level goal policy G in HRL and the much more compact context embedding C in CPC? I claim that they are both extracting a higher-level of abstraction, but they tried to disentangle those abstract factors in different ways. Particularly, CPC disentangles them by predicting the “contrastive coding”, associating the context embedding to the future lower-level latent space, while the HRL interacts higher-level goal space with the lower-level action space, in order to disentangle abstract factors in the goal space. Although the G in HRL is directly derived from observation space and the C in CPC is extracted from the latent/encoding space, they are essentially doing the same thing. (it is a quite strong claim, but I believe it holds)</p>
+
+<p>Finally, it is always interesting to ask what can we do in the future. I think we should realize that we are leaving the era of pattern recognition and perception, intelligence must be built upon perception - we need to learn representations that can efficiently encoding concepts, relations and so on. A connection between high abstraction space and the human symbolic/language space is inevitable as long as we aim to a human-centered AGI.</p>
+
+<p>It is relatively easy to get us here:
+<img src="/assets/img/post/agi_blog_img-0.jpg"></p>
+
+<p>but it definitely needs an AGI approach to get us here:
+<img src="/assets/img/post/agi_blog_img-1.jpg"></p>
+
+<p>Short-term goal: (based on consciousness prior, CPC and HRL)</p>
+
+<p>Learning more abstracted &amp; hierarchical representations
+step 1 - jointly learn representation in a multimodal env &amp; eval them in various tasks; (investigated, related work found)
+step 2 - do step 1 in an unsupervised way, coming up with comparable performance; (investigated, related work found)
+step 3 - creating multimodal QA dataset, not only text (we can do reading comprehension, but it is too hard for a baby!) - keep it simple;
+step 4 - achieve SOTA on the multimodal QA dataset with reasonable performance; example: given a piece of video, ask the agent some questions about it. Note that it is important to know what it does not know!
+step 5 - add reinforcement learning into the agent (from instance-to-instance learning to scene-to-scene learning); Predicting the future is important!! explain: sequential processing is brought in naturally with the reinforcement learning;
+step 6 - repeat from step 4;</p>
+
+<p>Long-term goal:</p>
+
+<p>Make transformation from one modality to another easy
+step 1 - conditional generative model between different modalities; Do not need to reconstruct every detail but only the key aspects
+step 2 - shared representation of concepts that are semantically the same in different modalities;</p>
+
+<p>Reasoning &amp; planning based on what achieved above
+to be continued…</p>
+
+<p>References: <br>
+https://arxiv.org/abs/1709.08568<br>
+https://arxiv.org/abs/1807.03748<br>
+https://arxiv.org/abs/1810.01257<br></p>
+
+  </article>
+
+</div>
 
     </div>
 

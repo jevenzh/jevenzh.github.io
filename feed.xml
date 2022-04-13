@@ -1,0 +1,956 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://jevenzh.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://jevenzh.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2022-04-13T15:44:12+00:00</updated><id>https://jevenzh.github.io/feed.xml</id><title type="html">Jiawei (Jeven) Zhang</title><subtitle>Always be a student who loves machine learning.
+</subtitle><entry><title type="html">IIR和FIR滤波器</title><link href="https://jevenzh.github.io/blog/2022/fir-vs-iir/" rel="alternate" type="text/html" title="IIR和FIR滤波器" /><published>2022-03-06T19:40:16+00:00</published><updated>2022-03-06T19:40:16+00:00</updated><id>https://jevenzh.github.io/blog/2022/fir-vs-iir</id><content type="html" xml:base="https://jevenzh.github.io/blog/2022/fir-vs-iir/"><![CDATA[<h2 id="数字滤波器分类">数字滤波器分类</h2>
+<p>数字滤波器分为无限脉冲响应（IIR）有限脉冲响应（FIR）两种。其中，IIR（无限脉冲响应）滤波器通常用于线性相位不太重要且内存有限的应用。它们已被广泛部署在音频均衡、生物医学传感器信号处理、物联网/物联网智能传感器和高速电信/射频应用中。FIR（有限脉冲响应）滤波器通常用于线性相位重要且内存和计算性能相当大的应用。它们广泛部署在音频和生物医学信号增强应用中。</p>
+
+<p><br /></p>
+
+<h2 id="数学定义">数学定义</h2>
+<p>如导言所述，IIR和FIR的名称源于每种类型的滤波器的数学定义，即IIR滤波器根据其理论上的无限脉冲响应进行分类，
+\(y(n)=\sum_{k=0}^\infty h(k)x(n−k)\)</p>
+
+<p>以及按其有限脉冲响应分类的FIR，
+\(y(n)=\sum_{k=0}^{N-1} h(k)x(n−k)\)</p>
+
+<h3 id="fir定义">FIR定义</h3>
+<p>返回IIR的线性常数系数差方程，即
+\(y(n)=\sum_{k=0}^q b_kx(n−k)−\sum_{k=1}^p a_ky(n−k)\)
+请注意，当我们设置ak系数（即反馈）到零，定义简化为我们最初的FIR过滤器定义，这意味着FIR计算仅基于过去和现在的输入值，即：
+\(y(n)=\sum_{k=0}^q b_kx(n−k)\)</p>
+
+<h4 id="具体实现">具体实现</h4>
+<p>虽然FIR存在几种实际实现，但直接形式结构及其移调表亲可能是最常用的，因此，所有设计的滤波系数都打算在直接形式结构中实现。</p>
+
+<p>直接形式结构和相关差分方程如下所示。采用单一蓄电池概念，主张直接实现固定点形式。
+\(y(n)=b0x(n)+b1x(n−1)+b2x(n−2)+...+bqx(n−q)）\)
+直接形式；直接形式结构
+&lt;img src=https://www.advsolned.com/wp-content/uploads/2020/04/df1_fir.png eight=”600”/&gt;</p>
+
+<h3 id="iir定义">IIR定义</h3>
+<p>如上所述，IIR滤波器根据其理论上的无限脉冲响应进行分类，
+\(y(n)=\sum_{k=0}^\infty h(k)x(n−k)\)</p>
+
+<p>实际上，无法使用此方程计算IIR的输出。因此，方程式可以用有限的poles p和zeros q进行重写，由以下给出的线性常数系数差分方程定义：
+\(y(n)=\sum_{k=0}^q b_kx(n−k) − \sum_{k=1}^p a_ky(n−k)\)
+其中，<code class="language-plaintext highlighter-rouge">$$ a_k $$</code>和<code class="language-plaintext highlighter-rouge">$$ b_k $$</code>是滤波器的分母和分子多项式系数，谁的根分别等于滤波器的极点(poles)和零(zeros)。因此，可以使用z转换延迟属性来定义差分方程和z变换（传递函数）之间的关系，这样，
+\(\sum_{k=0}^q b_kx(n−k) − \sum_{k=1}^p a_ky(n−k) \leftrightarrow  \dfrac{\sum_{k=0}^q b_kz^{-k}}{\sum_{k=1}^p a_kz^{-k}}\)</p>
+
+<p>如前所述，传输函数是滤波器的频域表示。另请注意，极点作用于输出数据，零作用于输入数据。由于极点作用于输出数据并影响稳定性，因此为了BIBO（有界输入、有界输出）的稳定性，它们的半径必须保持在单位圆圈内（即&lt;1）。零的半径不那么关键，因为它们不影响滤波器的稳定性。这是全零FIR（有限脉冲响应）滤波器始终稳定的主要原因。</p>
+
+<h4 id="bibo稳定性">BIBO稳定性</h4>
+<p>如果每个有界输入都产生有界输出，线性时间不变（如数字滤波器）称为有界输入、有界输出稳定或BIBO稳定，如
+\(\sum_{k=0}^\infty |h(k)|\lt \infin\)
+其中，h(k)是LTI系统的脉冲响应。分析这个方程，应该清楚的是，只有当系统的极点位于单位圆内时，BIBO稳定性标准才会得到满足，因为系统的ROC（收敛区域）必须包括单位圆。因此，只要说，如果所有极都位于单位圆圈内，有界输入信号将始终产生有界输出信号就足够了。</p>
+
+<p>另一方面，零不受这一要求的约束，因此可能位于z平面上的任何地方，因为它们不会直接影响系统稳定性。因此，系统稳定性分析可以首先计算传递函数的根（即分子和分母多项式的根），然后在z平面上绘制相应的极点和零。</p>
+
+<p>如果单元圆圈上有任何杆子，就会出现一个有趣的情况，因为据说该系统略微稳定，因为它既不稳定也不不稳定。虽然稍微稳定的系统不是BIBO稳定的，但它们已被数字振荡器设计者利用，因为它们的脉冲响应提供了一种简单的正弦波生成方法，事实证明，正弦波在电信领域非常宝贵。</p>
+
+<p><br /></p>
+
+<h4 id="bi-quadratic-iir滤波器">Bi-quadratic IIR滤波器</h4>
+<p>这里讨论的IIR过滤器实现被称为二进制，因为它有两个极点和两个零，如下图2所示。双四实现对固定点实现特别有用，因为量化和数值稳定性的影响最小化了。然而，任何二进制实现的总体成功取决于可用的数字精度，该精度必须足够大，以确保量化极总是在单位圆圈内。</p>
+
+<p>直接形式I（双）IIR滤波器实现和传输功能。;直接形式;双面过滤器
+<img src="https://www.advsolned.com/wp-content/uploads/2018/09/asn25_DFI.png" />
+图1：直接形式I（双四）IIR滤波器实现和传输功能。</p>
+
+<p>分析图2，可以看出双四结构实际上由两个反馈路径组成（按a1和a2），三条前进路径（缩放方式b0，b1和b2）和节增益，K。因此，图1的过滤操作可以用以下简单的递归方程来总结：
+\(y(n)=K×[b_0x(n)+b_1x(n−1)+b_2x(n−2)]–a_1y(n−1)−a_2y(n-2)\)
+分析该方程，请注意，双项实现只需要四个加法（只需要一个累加器）和五个乘法，这些都可以在任何Cortex-M微控制器上轻松容纳。章节增益，K在实现之前，也可以预乘正向路径系数。</p>
+
+<p>Biquad过滤器的集合称为Biquad级联，如下图所示。
+<img src="https://www.advsolned.com/wp-content/uploads/2018/09/asn25_biquadcascade.png" height="100" />
+图2 Biquad Cascades of IIR</p>
+
+<p><br /></p>
+
+<h4 id="浮点实现">浮点实现</h4>
+<p>在浮点实现滤波器时（即使用双精度或单精度算法），直接形式II结构被认为是比直接形式I结构更好的选择。直接形式II移调结构被认为是浮点实现的数值最准确，因为通过分析差分方程，数值淹没的不良影响最小化了。</p>
+
+<p>直接形式II移调结构、传递函数和差分方程；IIR滤波器；双滤波器
+<img src="https://www.advsolned.com/wp-content/uploads/2018/09/asn25_DFIITrans.png" />
+图3 – 直接形式II 移位结构、传递函数和差分方程</p>
+
+<p><br /><br /></p>
+
+<h2 id="两种滤波器对比">两种滤波器对比</h2>
+<h3 id="iir滤波器">IIR滤波器</h3>
+<p>IIR（无限脉冲响应）滤波器通常用于线性相位不太重要且内存有限的应用。它们已被广泛部署在音频均衡、生物医学传感器信号处理、物联网/物联网智能传感器和高速电信/射频应用中。</p>
+
+<h4 id="优势">优势</h4>
+<p>实施成本低：与FIR滤波器相比，需要更少的系数和内存，以满足一组类似的规格，即截止频率和停止带衰减。
+低延迟：由于系数少，适合实时控制和非常高速的射频应用。
+模拟等效物：可用于使用s-z平面映射变换模拟模拟滤波器的特性。</p>
+
+<h4 id="劣势">劣势</h4>
+<p>非线性相位特征：IIR滤波器的相位特征通常是非线性的，特别是在截止频率附近。可以使用全通均衡滤波器来改善通带相位特性。
+更详细的分析：在固定点实现时，需要更多的缩放和数字溢出分析。直接形式II滤波器结构对量化的影响特别敏感，在设计阶段需要特别注意。
+数值稳定性：由于反馈路径，数值稳定性低于FIR（有限脉冲响应）对应物。</p>
+
+<h3 id="fir过滤器">FIR过滤器</h3>
+<p>FIR（有限脉冲响应）滤波器通常用于线性相位重要且内存和计算性能相当大的应用。它们广泛部署在音频和生物医学信号增强应用中。它们的全零结构（见下文讨论）确保了它们永远不会对任何类型的输入信号变得不稳定，这使它们比国际红外线具有明显的优势。</p>
+
+<h4 id="优势-1">优势</h4>
+<p>线性相位：FIR可以很容易地设计成线性相位。这意味着要过滤的信号中不会引入相位失真，因为所有频率在时间上移动相同——从而保持其相对谐波关系（即恒定组和相位延迟）。IIR滤波器当然不是这种情况，它们具有非线性相位特性。
+稳定性：由于FIR不使用之前的输出值来计算其当前输出，即它们没有反馈，因此它们永远不会对任何类型的输入信号变得不稳定，这使它们比IIR滤波器具有明显的优势。
+任意频率响应：Parks-McClellan和ASN FilterScript的frarb()函数允许设计具有任意大小响应的FIR。这意味着FIR比IIR更容易定制。
+固定点性能：量化的影响不如IIR严重。</p>
+
+<h4 id="劣势-1">劣势</h4>
+<p>高计算和内存要求：与国际红外线相比，飞行情报区通常需要更多的系数来实现急剧截止。其后果是，它们需要更多的内存和显著增加的MAC（倍增和累积）操作。然而，基于Arm的Cortex-M内核的现代微控制器架构现在包括通过SIMD（信号指令、多个数据）提供DSP硬件支持，这极大地加快了过滤操作。
+更高的延迟：系数越多，这意味着线性相位FIR通常不如IIR适合快速的高吞吐量应用。对于实时闭环控制应用程序来说，这成为问题，在这种应用中，线性相位FIR滤波器的组延迟可能太大，无法实现环路稳定性。
+最小相位滤波器：解决线性滤波器中固有的N/2延迟（群延迟）的解决方案是使用所谓的最小相位滤波器，即单位圆以外的任何零都移动到单元圆内的共轭互惠位置。零翻转操作的结果是，震级频谱将与原始滤波器相同，相位将是非线性的，但最重要的是，延迟将从N/2减少到小得多的东西（尽管不是恒定的），使其适合实时控制应用程序。
+对于相位不那么重要的应用程序，这听起来可能很理想，但在处理大型多项式时，寻根算法的数值准确性存在困难。因此，在使用这种方法时，50或60的订单应被视为最高限额。尽管确实存在其他方法（例如复杂分流），但将高阶线性相位FIR转换为最小相位表亲仍然是一项具有挑战性的任务。
+没有模拟等效物：使用双线性匹配的z变换（s-z映射），模拟滤波器可以轻松转换为等效IIR滤波器。然而，这对FIR来说是不可能的，因为它没有模拟等效物。</p>
+
+<p><br /></p>
+
+<h2 id="示例">示例</h2>
+<p>为了说明IIR和FIR之间的区别，图1显示了14阶FIR（实线）和4阶Chebyshev Type IIR（虚线）的频率响应如图4。请注意，虽然震级光谱的衰减程度相似，但IIR滤波器的相频谱在通带中是非线性的（0→7.5Hz），并在截止频率下变得非常非线性，fc=7.5Hz。另请注意，飞行情报区要求更高的系数（15个与IIR的10个）来匹配国际红外线的衰减特性。</p>
+
+<p>FIR vs IIR：14阶FIR（实线）和4阶Chebyshev Type IIR（虚线）的频率响应；Fir Filter，IIR Filter
+<img src="https://www.advsolned.com/wp-content/uploads/2020/04/fir_iir.png" height="600" />
+图4：FIR与IIR：14阶FIR（实线）和4阶Chebyshev Type IIR（虚线）的频率响应</p>
+
+<p><br /><br /></p>
+<hr />
+
+<blockquote>
+    We do not grow absolutely, chronologically. We grow sometimes in one dimension, and not in another, unevenly. We grow partially. We are relative. We are mature in one realm, childish in another.
+    —Anais Nin
+</blockquote>]]></content><author><name></name></author><category term="sample-posts" /><category term="DSP," /><category term="signal," /><category term="filter" /><summary type="html"><![CDATA[数字滤波器的分类及实用设计指南]]></summary></entry><entry><title type="html">Notes of learning Carla</title><link href="https://jevenzh.github.io/blog/2021/carla/" rel="alternate" type="text/html" title="Notes of learning Carla" /><published>2021-07-04T17:39:00+00:00</published><updated>2021-07-04T17:39:00+00:00</updated><id>https://jevenzh.github.io/blog/2021/carla</id><content type="html" xml:base="https://jevenzh.github.io/blog/2021/carla/"><![CDATA[<ol>
+  <li>What is CARLA?</li>
+</ol>
+
+<p>Carla是一个用于自主驾驶研究的开源模拟器。与Torcs的关系，都属于模拟器，但是Torcs并非为自动驾驶研究而生，在仿真程度上，Carla可以说远胜Torcs，而且使用也更为方便。</p>
+
+<p>CARLA （Car Learning to Act）has been developed from the ground up to support development, training, and validation of autonomous urban driving systems.</p>
+
+<p>TORCS (The Open Racing Car Simulator) is an open source 3D car racing simulator available for multiple platforms，originally developed by Eric Espié and Christophe Guionneau in 1997.</p>
+
+<ol>
+  <li>Carla的设计架构</li>
+</ol>
+
+<p>CARLA is composed by the following modules</p>
+
+<p>Client side
+Python client API: “PythonClient/carla”
+Server side
+CarlaUE4 Unreal Engine project: “Unreal/CarlaUE4”
+Carla plugin for Unreal Engine: “Unreal/CarlaUE4/Plugins/Carla”
+CarlaServer: “Util/CarlaServer”
+Python client API</p>
+
+<p>The client API provides a Python module for communicating with the CARLA server. In the folder “PythonClient”, we provide several examples for scripting a CARLA client using the “carla” module.</p>
+
+<p>CarlaServer</p>
+
+<p>External library for the networking communications.</p>
+
+<p>CarlaUE4 Unreal Engine project</p>
+
+<p>The Unreal project “CarlaUE4” contains all the assets and scenes for generating the CARLA binary. It uses the tools provided by the Carla plugin to assemble the cities and behavior of the agents in the scene.</p>
+
+<ol>
+  <li>System requirements</li>
+</ol>
+
+<p>Carla是基于大名鼎鼎的游戏引擎Unreal Engine开发的，对系统要求比较高（反正我的MacBook Pro上装Ubuntu虚拟机是跑不起来的…）</p>
+
+<p>CARLA is a very performance demanding software, at the very minimum you would need a computer with a dedicated GPU capable of running Unreal Engine. See Unreal Engine’s recommended hardware.</p>
+
+<p>Building CARLA from source requires about 15GB of disk space, not counting Unreal Engine installation. However, you will also need to build and install Unreal Engine, which on Linux requires much more disk space as it keeps all the intermediate files. (我build的时候用了大概46G，而且好多内容需要翻墙下载。)</p>
+
+<ol>
+  <li>预编译版本：0.7.1</li>
+</ol>
+
+<p>下载地址：Carla 0.7 baidu pan 链接: https://pan.baidu.com/s/1eSuBh5K 密码: dgqz</p>
+
+<p>Credits to @xfqbuaa from Github, 解压就可以使用，如果想要从GitHub源码编译，会比较复杂，并且需要全局翻墙。折腾了一天多才编译成功，具体细节有兴趣的请私信。</p>
+
+<p>run Carla as server:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./CarlaUE4.sh /Game/Maps/Town01 -carla-server -benchmark -fps=15
+</code></pre></div></div>
+
+<p>CARLA specific command-line options</p>
+<ul>
+  <li>carla-server Launches CARLA as server, the execution hangs until a client connects.</li>
+  <li>carla-settings=”Path/To/CarlaSettings.ini” Load settings from the given INI file. See Example.CarlaSettings.ini.</li>
+  <li>carla-world-port=N Listen for client connections at port N, agent ports are set to N+1 and N+2 respectively. Activates server.</li>
+  <li>carla-no-hud Do not display the HUD by default.</li>
+  <li>carla-no-networking Disable networking. Overrides -carla-server if present.
+另外Carla也可以在无图形界面环境下运行，但仍然会使用默认GPU进行渲染。</li>
+</ul>
+
+<p>run Python client:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd PythonClient/
+./client_example.py  or  ./manual_control.py
+</code></pre></div></div>
+
+<p>需要注意的是，如果自己从源码编译Carla，没有预编译版本中的启动脚步：</p>
+
+<p>There is no “CarlaUE4.sh” script in the source version of CARLA</p>
+
+<p>编译好之后 open the project in the Unreal Editor, you can hit Play to test CARLA.</p>
+
+<ol>
+  <li>游戏参数（Measurements）</li>
+</ol>
+
+<p>Carla server会把每一帧画面及其对应的各种measurements都一并返回给客户端。这些Measurements包括：</p>
+
+<p>Key Type Description</p>
+
+<p>transform Transform World transform of the player.</p>
+
+<p>acceleration Vector3D Current acceleration of the player.</p>
+
+<p>forward_speed float Forward speed in km/h.</p>
+
+<p>collision_vehicles float Collision intensity with other vehicles.</p>
+
+<p>collision_pedestrians float Collision intensity with pedestrians.</p>
+
+<p>collision_other float General collision intensity (everything –else but pedestrians and vehicles).</p>
+
+<p>intersection_otherlane float Percentage of the car invading other —-lanes.</p>
+
+<p>intersection_offroad float Percentage of the car off-road.</p>
+
+<p>autopilot_control Control Vehicle’s autopilot control that would —apply this frame.</p>
+
+<p>其中Transform是由player的location和rotation组成的, Vector3D + Rotation3D</p>
+
+<p>Collision variables keep an accumulation of all the collisions occurred during this episode. Every collision contributes proportionally to the intensity of the collision (norm of the normal impulse between the two colliding objects). Three different counts are kept (pedestrians, vehicles, and other). Colliding objects are classified based on their tag (same as for semantic segmentation).</p>
+
+<p>在Carla中，steer, throttle, brake/hand brake, reverse都是控制动作，属于autopilot ccontrol，需要client端发送给server：</p>
+
+<p>steer float Steering angle between [-1.0, 1.0] (*)</p>
+
+<p>throttle float Throttle input between [ 0.0, 1.0]</p>
+
+<p>brake float Brake input between [ 0.0, 1.0]</p>
+
+<p>hand_brake bool Whether the hand-brake is engaged</p>
+
+<p>reverse bool Whether the vehicle is in reverse gear</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>measurements, sensor_data = carla_client.read_data()
+control = measurements.player_measurements.autopilot_control
+# modify here control if wanted.
+carla_client.send_control(control)
+</code></pre></div></div>
+
+<p>另外在Carla设置中可以打开非玩家的信息，server会将其返回给client。</p>
+
+<p>Non-player agents info</p>
+
+<ul>
+  <li>Vehicle Contains its transform, box-extent, and forward speed.</li>
+  <li>Pedestrian Contains its transform, box-extent, and forward speed. (*)</li>
+  <li>Traffic light Contains its transform and state (green, yellow, red).</li>
+  <li>Speed-limit sign Contains its transform and speed-limit.</li>
+</ul>
+
+<ol>
+  <li>摄像头与传感器</li>
+</ol>
+
+<p>Cameras and sensors can be added to the player vehicle by defining them in the settings file sent by the client on every new episode.</p>
+
+<p><strong>CarlaSettings.ini</strong> 例子:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>; Use it with `./CarlaUE4.sh -carla-settings=Path/To/This/File`.
+
+[CARLA/Server]
+; If set to false, a mock controller will be used instead of waiting for a real
+; client to connect.
+UseNetworking=true
+; Ports to use for the server-client communication. This can be overridden by
+; the command-line switch `-world-port=N`, write and read ports will be set to
+; N+1 and N+2 respectively.
+WorldPort=2000
+; Time-out in milliseconds for the networking operations.
+ServerTimeOut=10000
+; In synchronous mode, CARLA waits every frame until the control from the client
+; is received.
+SynchronousMode=true
+; Send info about every non-player agent in the scene every frame, the
+; information is attached to the measurements message. This includes other
+; vehicles, pedestrians and traffic signs. Disabled by default to improve
+; performance.
+SendNonPlayerAgentsInfo=false
+
+[CARLA/LevelSettings]
+; Path of the vehicle class to be used for the player. Leave empty for default.
+; Paths follow the pattern "/Game/Blueprints/Vehicles/Mustang/Mustang.Mustang_C"
+PlayerVehicle=
+; Number of non-player vehicles to be spawned into the level.
+NumberOfVehicles=15
+; Number of non-player pedestrians to be spawned into the level.
+NumberOfPedestrians=30
+; Index of the weather/lighting presets to use. If negative, the default presets
+; of the map will be used.
+WeatherId=1
+; Seeds for the pseudo-random number generators.
+SeedVehicles=123456789
+SeedPedestrians=123456789
+
+[CARLA/SceneCapture]
+; Names of the cameras to be attached to the player, comma-separated, each of
+; them should be defined in its own subsection. E.g., Uncomment next line to add
+; a camera called MyCamera to the vehicle
+
+; Cameras=MyCamera
+
+; Now, every camera we added needs to be defined it in its own subsection.
+[CARLA/SceneCapture/MyCamera]
+; Post-processing effect to be applied. Valid values:
+;   * None                  No effects applied.
+;   * SceneFinal            Post-processing present at scene (bloom, fog, etc).
+;   * Depth                 Depth map ground-truth only.
+;   * SemanticSegmentation  Semantic segmentation ground-truth only.
+PostProcessing=SceneFinal
+; Size of the captured image in pixels.
+ImageSizeX=800
+ImageSizeY=600
+; Camera (horizontal) field of view in degrees.
+CameraFOV=90
+; Position of the camera relative to the car in centimeters.
+CameraPositionX=15
+CameraPositionY=0
+CameraPositionZ=123
+; Rotation of the camera relative to the car in degrees.
+CameraRotationPitch=8
+CameraRotationRoll=0
+CameraRotationYaw=0
+
+; Stereo setup example:
+;
+; [CARLA/SceneCapture]
+; Cameras=CameraStereoLeft/RGB,CameraStereoLeft/Depth,CameraStereoRight/RGB,CameraStereoRight/Depth
+; ImageSizeX=720
+; ImageSizeY=512
+; CameraFOV=90
+; [CARLA/SceneCapture/CameraStereoLeft]
+; CameraPositionX=170
+; CameraPositionY=-30
+; CameraPositionZ=150
+; CameraRotationPitch=0
+; CameraRotationRoll=0
+; CameraRotationYaw=0
+; [CARLA/SceneCapture/CameraStereoLeft/RGB]
+; PostProcessing=SceneFinal
+; [CARLA/SceneCapture/CameraStereoLeft/Depth]
+; PostProcessing=Depth
+; [CARLA/SceneCapture/CameraStereoRight]
+; CameraPositionX=170
+; CameraPositionY=30
+; CameraPositionZ=150
+; CameraRotationPitch=0
+; CameraRotationRoll=0
+; CameraRotationYaw=0
+; [CARLA/SceneCapture/CameraStereoRight/RGB]
+; PostProcessing=SceneFinal
+; [CARLA/SceneCapture/CameraStereoRight/Depth]
+; PostProcessing=Depth
+</code></pre></div></div>
+
+<p>sensor目前只有主要的三种, implemented as different post-processing effects applied to scene capture cameras:Scene final, Depth map, Semantic segmentation</p>
+
+<ol>
+  <li>Running benchmarks</li>
+</ol>
+
+<p>The “carla” api provides a basic benchmarking system, that allows making several tests on a certain agent. We already provide the same benchmark used in the CoRL 2017 paper. By running this benchmark you can compare the results of your agent to the results obtained by the agents show in the paper.</p>
+
+<p>To run benchmark:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>corl = CoRL2017(city_name=args.city_name, name_to_save=args.log_name)
+agent = Manual(args.city_name)
+results = corl.benchmark_agent(agent, client)
+</code></pre></div></div>
+
+<p>如果想测试自己实现的agent，继承Manual的父类，实现对应run_step方法即可。</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def run_step(self, measurements, sensor_data, target):
+    """
+    Function to run a control step in the CARLA vehicle.
+    :param measurements: object of the Measurements type
+    :param sensor_data: images list object
+    :param target: target position of Transform type
+    :return: an object of the control type.
+    """
+    control = VehicleControl()
+    control.throttle = 0.9
+    return control
+</code></pre></div></div>
+
+<p>如果需要自定义agent路线，可以在carla/benchmarks/CoRL2017.py中找到对应设置方法:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    def _poses_town01(self):
+        """
+        Each matrix is a new task. We have all the four tasks
+
+        """
+
+        def _poses_straight():
+            return [[36, 40], [39, 35], [110, 114], [7, 3], [0, 4],
+                    [68, 50], [61, 59], [47, 64], [147, 90], [33, 87],
+                    [26, 19], [80, 76], [45, 49], [55, 44], [29, 107],
+                    [95, 104], [84, 34], [53, 67], [22, 17], [91, 148],
+                    [20, 107], [78, 70], [95, 102], [68, 44], [45, 69]]
+
+        def _poses_one_curve():
+            return [[138, 17], [47, 16], [26, 9], [42, 49], [140, 124],
+                    [85, 98], [65, 133], [137, 51], [76, 66], [46, 39],
+                    [40, 60], [0, 29], [4, 129], [121, 140], [2, 129],
+                    [78, 44], [68, 85], [41, 102], [95, 70], [68, 129],
+                    [84, 69], [47, 79], [110, 15], [130, 17], [0, 17]]
+
+        def _poses_navigation():
+            return [[105, 29], [27, 130], [102, 87], [132, 27], [24, 44],
+                    [96, 26], [34, 67], [28, 1], [140, 134], [105, 9],
+                    [148, 129], [65, 18], [21, 16], [147, 97], [42, 51],
+                    [30, 41], [18, 107], [69, 45], [102, 95], [18, 145],
+                    [111, 64], [79, 45], [84, 69], [73, 31], [37, 81]]
+
+        return [_poses_straight(),
+                _poses_one_curve(),
+                _poses_navigation(),
+                _poses_navigation()]
+</code></pre></div></div>]]></content><author><name></name></author><summary type="html"><![CDATA[an example of a blog post with diagrams]]></summary></entry><entry><title type="html">Thoughts about AGI</title><link href="https://jevenzh.github.io/blog/2021/agi/" rel="alternate" type="text/html" title="Thoughts about AGI" /><published>2021-07-04T17:39:00+00:00</published><updated>2021-07-04T17:39:00+00:00</updated><id>https://jevenzh.github.io/blog/2021/agi</id><content type="html" xml:base="https://jevenzh.github.io/blog/2021/agi/"><![CDATA[<p>Among all the approaches that dedicated to achieving AGI, my focus is on the multi-modal disentangled representation learning. I will elaborate my perspective in the following section based on three papers: the consciousness prior, contrastive predictive coding (CPC) and hierarchical representation learning (HRL).</p>
+
+<p>Firstly, Yoshua Bengio has proposed a theory of learning representation based on a more biological/psychological plausible prior, which is called the consciousness prior. It started by asking what’s wrong with the current deep learning, in which we learn the representation of our data/observations using deep neural networks? As established in many state-of-the-art works in many AI subfields, current deep neural networks are able to learn effective “high-level” representations for classification or reconstruction (generative) tasks. However, such distributed dense representations make neural networks hard to understand, like a “black box”, therefore it is crucial to disentangle abstract factors from each other in the distributed representation of high-level features. The consciousness prior proposes a methodology to implement such disentanglement by hypothesizing the representation in a conscious state should be of low capacity, for instance, a low-dimensional thought vector. All predictions or reconstruction tasks should be conducted in this space, and those lower stream tasks are supposed to be learned in a much more efficient manner in the low-dimensional space.</p>
+
+<p>Moreover, I would like to look into the question of how to implement such prior. CPC and hierarchical reinforcement learning (HRL), in my opinion, are exactly two of the all possible approaches. They are two main shared key ideas in these two works that match the assumption of the consciousness prior, one is the higher-level abstraction, another is the indirect objective - the mutual information. Note that such “off-task” objective, i.e. the use of mutual information as part of the objective, is very similar to the verifier networks in the consciousness prior theory, it indicates correlations of observations in different time step (temporal dimension), which lies in the very core of the world of coherence. On the other hand, what is the purpose of the higher-level goal policy G in HRL and the much more compact context embedding C in CPC? I claim that they are both extracting a higher-level of abstraction, but they tried to disentangle those abstract factors in different ways. Particularly, CPC disentangles them by predicting the “contrastive coding”, associating the context embedding to the future lower-level latent space, while the HRL interacts higher-level goal space with the lower-level action space, in order to disentangle abstract factors in the goal space. Although the G in HRL is directly derived from observation space and the C in CPC is extracted from the latent/encoding space, they are essentially doing the same thing. (it is a quite strong claim, but I believe it holds)</p>
+
+<p>Finally, it is always interesting to ask what can we do in the future. I think we should realize that we are leaving the era of pattern recognition and perception, intelligence must be built upon perception - we need to learn representations that can efficiently encoding concepts, relations and so on. A connection between high abstraction space and the human symbolic/language space is inevitable as long as we aim to a human-centered AGI.</p>
+
+<p>It is relatively easy to get us here:
+<img src="/assets/img/post/agi_blog_img-0.jpg" /></p>
+
+<p>but it definitely needs an AGI approach to get us here:
+<img src="/assets/img/post/agi_blog_img-1.jpg" /></p>
+
+<p>Short-term goal: (based on consciousness prior, CPC and HRL)</p>
+
+<p>Learning more abstracted &amp; hierarchical representations
+step 1 - jointly learn representation in a multimodal env &amp; eval them in various tasks; (investigated, related work found)
+step 2 - do step 1 in an unsupervised way, coming up with comparable performance; (investigated, related work found)
+step 3 - creating multimodal QA dataset, not only text (we can do reading comprehension, but it is too hard for a baby!) - keep it simple;
+step 4 - achieve SOTA on the multimodal QA dataset with reasonable performance; example: given a piece of video, ask the agent some questions about it. Note that it is important to know what it does not know!
+step 5 - add reinforcement learning into the agent (from instance-to-instance learning to scene-to-scene learning); Predicting the future is important!! explain: sequential processing is brought in naturally with the reinforcement learning;
+step 6 - repeat from step 4;</p>
+
+<p>Long-term goal:</p>
+
+<p>Make transformation from one modality to another easy
+step 1 - conditional generative model between different modalities; Do not need to reconstruct every detail but only the key aspects
+step 2 - shared representation of concepts that are semantically the same in different modalities;</p>
+
+<p>Reasoning &amp; planning based on what achieved above
+to be continued…</p>
+
+<p>References: <br />
+https://arxiv.org/abs/1709.08568<br />
+https://arxiv.org/abs/1807.03748<br />
+https://arxiv.org/abs/1810.01257<br /></p>]]></content><author><name></name></author><summary type="html"><![CDATA[you can also redirect to assets like pdf]]></summary></entry><entry><title type="html">What is multi-modal learning?</title><link href="https://jevenzh.github.io/blog/2020/multimodal/" rel="alternate" type="text/html" title="What is multi-modal learning?" /><published>2020-10-21T00:59:00+00:00</published><updated>2020-10-21T00:59:00+00:00</updated><id>https://jevenzh.github.io/blog/2020/multimodal</id><content type="html" xml:base="https://jevenzh.github.io/blog/2020/multimodal/"><![CDATA[<h2 id="multimodal-machine-learning---overview">Multimodal Machine Learning - Overview</h2>
+
+<p>The world surrounding us involves multiple modalities – we see objects, hear sounds, feel texture, smell odors, and so on. In general terms, a modality refers to the way in which something happens or is experienced. Most people associate the word modality with the sensory modalities which represent our primary channels of communication and sensation, such as vision or touch. A research problem or dataset is therefore characterized as multimodal when it includes multiple such modalities. In order for Artificial Intelligence (AI) to make progress in understanding the world around us, it needs to be able to interpret and reason about multimodal messages. Multimodal machine learning aims to build models that can process and relate information from multiple modalities.
+<br /></p>
+
+<p>The emerging field of multimodal machine learning has seen much progress in the past few years. The core challenges are multiple: representation with the goal to learn computer interpretable descriptions of heterogenous data from multiple modalities, translation which represents the process of changing data from one modality to another, alignment where we want to identify relations between elements from two or more different modalities, fusion which represents the process of joining information from two or more modalities to perform a prediction task, and finally co-learning with the goal of transferring knowledge between modalities and their representations.
+<br /></p>
+
+<p>The research field of Multimodal Machine Learning brings some unique challenges for computational researchers given the heterogeneity of the data. Learning from multimodal sources offers the possibility of capturing correspondences between modalities and gaining an in-depth understanding of natural phenomena. In our work, we identify and explore five core technical challenges (and related sub-challenges) surrounding multimodal machine learning. They are central to the multimodal setting and need to be tackled to progress the field. As of the taxonomy of Multimodal Machine Learning, current taxonomy goes beyond the typical early and late fusion split, and consists of the five following challenges:
+<br /></p>
+
+<p>Representation: A first fundamental challenge is learning how to represent and summarize multimodal data in a way that exploits the complementarity and redundancy of multiple modalities. The heterogeneity of multimodal data makes it challenging to construct such representations. For example, language is often symbolic while audio and visual modalities will be represented as signals.
+<br /></p>
+
+<p>Translation: A second challenge addresses how to translate (map) data from one modality to another. Not only is the data heterogeneous, but the relationship between modalities is often open-ended or subjective. For example, there exist some correct ways to describe an image, and one perfect translation may not exist.
+<br /></p>
+
+<p>Alignment: A third challenge is to identify the direct relations between (sub)elements from two or more different modalities. For example, we may want to align the steps in a recipe to a video showing the dish being made. To tackle this challenge we need to measure the similarity between different modalities and deal with possible long-range dependencies and ambiguities.
+<br /></p>
+
+<p>Fusion: A fourth challenge is to join information from two or more modalities to perform a prediction. For example, for audio-visual speech recognition, the visual description of the lip motion is fused with the speech signal to predict spoken words. The information coming from different modalities may have different predictive power and noise topology, with possibly missing data in at least one of the modalities.
+<br /></p>
+
+<p>Co-learning: The fifth challenge is to transfer knowledge between modalities, their representation, and their predictive models. This area of work is exemplified by algorithms of co-training, conceptual grounding, and zero shot learning. Co-learning explores how knowledge learning from one modality can help a computational model trained on a different modality. This challenge is particularly relevant when one of the modalities has limited resources (e.g., annotated data).
+<br /></p>
+
+<p>##</p>]]></content><author><name></name></author><category term="sample-posts" /><category term="machine-learning" /><category term="AI" /><summary type="html"><![CDATA[an introduction of multi-modal learning]]></summary></entry><entry><title type="html">What is Neural Turing Machine?</title><link href="https://jevenzh.github.io/blog/2020/NTM/" rel="alternate" type="text/html" title="What is Neural Turing Machine?" /><published>2020-09-28T15:12:00+00:00</published><updated>2020-09-28T15:12:00+00:00</updated><id>https://jevenzh.github.io/blog/2020/NTM</id><content type="html" xml:base="https://jevenzh.github.io/blog/2020/NTM/"><![CDATA[<h2 id="background">Background</h2>
+<p>在写《深度学习与神经科学相遇》的过程中开始谈到了RNNs（Recurrent Neural Networks）,我想很有必要暂停下来先对RNNs进行一些更深入的理解。当然，深度学习中有很多种网络结构，像多层网络结构（multi layered）可能大家比较熟悉，相信很多人接触神经网络是从下图这样的结构开始的，这也是deep learning中“deep”的来源。好友YJango也在专栏中写了一系列很好的介绍深层神经网络的文章，也以新颖的观点分析了深层学习为什么要deep。为了深入理解RNNs（也可能包含其他类型的网络），结合自身的学习经历和目前对深度学习的理解，我想分享一些我所认同的神经网络（甚至深度学习）的玩法（当前的一些fancy的研究），也借此机会梳理思路，同时希望能给读者有哪怕一点点的灵感，这也是写这个系列的初衷（同时也欢迎改进意见和讨论）。这个系列大概会分为三个部分：增强型的RNNs（memory augmented）、无监督的RNNs学习以及RNNs的训练与优化。</p>
+
+<p><img src="https://pic1.zhimg.com/80/v2-038e503454d641d19ec123756a761524_1440w.png" width="100%" height="auto" /></p>
+
+<p>有趣的是，《生活大爆炸》第十季中，神经科学家Amy已经在用皮肤细胞诱导培养出神经元细胞群，如果这个idea可以实现，那这很可能是生物计算的一大突破。计算机科学家在捣鼓人工神经网络进行认知计算的同时，神经科学家们可能在训练真正的生物“神经网络”来进行语音、图像识别等任务了吧。
+本文主要的reference是Google Brain的Chris Olah和Shan Carter所写的关于注意力机制和RNNs的Blog, 原文里有非常漂亮的动态图，想看英文的读者推荐直接阅读原文。另外Olah的blog超级赞，可以说是必看。</p>
+
+<p>** Chris Olah &amp; Shan Carter, “Attention and Augmented Recurrent Neural Networks”, Distill, 2016. **</p>
+
+<h2 id="representation-learning">Representation Learning</h2>
+<p>在某种意义上，有一张纸的人比没有的人更聪明，会使用数学符号的人可以解决不会使用数学符号的人所不能解决的问题。人类对计算机的使用让我们能够实现令人难以置信的成就，这些成就是不会使用工具的物种远远无法达到的。</p>
+
+<p>一般来说，似乎很多有趣的智能形式是人类的创造力、具有启发性的直觉和一些更简洁和细致的媒介（media）之间的交互，如语言或方程（实际上都是语言，而所有的语言则都是特定的知识表示）。有时，媒介是物理存在的东西，并为我们存储信息，防止我们犯错误，或简化计算。在其他情况下，媒介可以是我们大脑中操纵的模型。无论如何，它似乎都是智能的根基。</p>
+
+<p>我个人理解的这里所说的媒介，是知识表示（knowledge representation），无论是物体、光电信号还是数学符号等等，都是一样的。大脑可以把知识的表示凝聚到外界物体和信号之中，在视觉、听觉等感官系统的辅助下进行感知和推理，这样的能力是真正的人工智能必须具备的。也就意味着目前很多人所谓的“人工智能”都是狭义的。
+机器学习最近的研究成果开始有些这种味道，将神经网络所带来的直觉（intuition）与别的东西相结合。其中一种方法可以称为“启发式搜索”。例如，AlphaGo（Silver, et al., 2016）有一个模型学习围棋怎么工作，并通过另一神经网络的直觉和探索来指导它采取措施。类似地，DeepMath（Alemi, et al., 2016）使用神经网络作为操纵数学表达式的直觉。我们在本文中讨论的“增强的RNN”是另一种方法，其中我们将RNN连接到被精心加工过的媒介，也就是通过我们说的记忆模块，以便扩展它们的一般能力。</p>
+
+<p>其实无论怎么结合，首先逃离不了“表征学习”，其次，任何形式的结合无非是给网络增加了相互作用的成本函数（或者目标函数），他们的本质都是“多目标函数的动态交互”，这与《深度学习与神经科学相遇》中“大脑优化复杂的成本函数”观点一致，这也是我在读那篇paper之前最开始的intuition，我的思考都将follow这个观点。
+RNNs无疑是深度学习的主要内容之一，它允许神经网络处理序列数据，如文本、音频和视频。 它们可以用于将序列编码至不同层级的理解（抽象层次不同的知识表示）、标注序列，甚至从头开始生成新序列。</p>
+
+<p>一个RNN cell在处理序列数据时一直被重复使用，share weights。虽然我认为读者都应该知道这一点，但是考虑到可能有刚开始学的同学看，所以提一下。</p>
+
+<p>然而，简单的RNNs（vanilla version）是存在很多缺陷的，直到出现LSTM，增加了gates使得gradient vanishing不在成为问题。前几天还看到关于LSTM之父 Sepp Hochreiter and Jürgen Schmidhuber（尤其后者）如今并没有很大名气的讨论，大家有兴趣也可以了解一下。如今所有state-of-the-art的RNNs几乎都在使用LSTM。关于理解LSTM，推荐Olah’s Blog。</p>
+
+<h2 id="neural-turing-machine">Neural Turing Machine</h2>
+
+<p>在这基础之上出现了很多更加powerful的增强型RNNs，这些研究都是非常激动人心的。而这其中我们主要讨论以下4种：</p>
+
+<p><img src="https://pic2.zhimg.com/80/v2-c5bbc9d0729660681400d76b4145bb81_1440w.png" width="100%" height="auto" /></p>
+
+<p>本质上，它们都是RNNs的扩展，并且它们甚至可以组合在一起使用，这是由于注意力机制的使用将它们联系在了一起。Attention将是RNNs发展史上一个非常重要的里程碑。这四种模型都是非常酷的，但由于时间和篇幅关系，我们先从Neural Turing Machine开始，剩下的在后续文章中讨论。也算是为了弥补我之前没有那么成功的NTM分享经验。
+神经图灵机 - Neural Turing Machines NTM（Graves, et al., 2014）在一个很高的层面上构建神经计算模型，作为图灵机的实现。核心思想是在RNNs的基础上augment记忆模块。张量是神经网络的语言，因此记忆模块就是一组张量，具体地，原文使用一组向量来表示。实际上，只要可以保持一致性，使用一个高斯分布表示一个记忆单元也是可以的。</p>
+
+<p>这里A被称作controller（图中是在处理序列数据，有个错误，最后应该是x3，y3）, 可以是FNNs（feedforward neural networks），也可以是RNNs，但RNNs能实现更多操作，因为它是Turing Complete的。
+那么，里面的读、写操作如何工作呢？ 面临的挑战是，我们要使它们可微（differentiable）。 特别地，我们希望使它们相对于我们读取或写入的位置是可微的，以便我们可以学习读取和写入的位置。 这是棘手的，因为内存地址似乎是根本上离散的。 NTM采取一个非常聪明的解决方案：每一步，他们读写无处不在，只是程度不同。</p>
+
+<p>这里的idea是非常general的，那就是把离散操作转化为可微分的操作，核心是使用稀疏的连续性（sparse continuity）去表示离散（discreteness），这个概念并不新颖，但在神经网络中它将会变得很重要，也很常见。
+例如，在读取记忆的过程中， 与其指定单个位置，RNN给出“注意力分布”，其描述了我们关心不同存储器位置的程度的量。 这样，读取操作的结果是每个位置记忆内容的加权和。</p>
+
+<p>同理，写入记忆的过程也是使用一个“写入注意力分布”，每个位置都写，只是写的程度不同，那么这里就涉及到如何在一定程度结合新的记忆内容和老的记忆内容，作者使用的是新老内容的convex combination，满足凸性的线性组合就行，一个非常简单的函数是：（单个记忆位置）[公式], 里面的[公式]就可以看做“遗忘率”，等于1的时候久的记忆将被抹去。</p>
+
+<p>但是NTM如何决定在记忆中的哪些位置需要他们的注意力？ 他们实际上使用两种不同方法的组合：基于内容的注意和基于位置的注意。 基于内容的关注允许NTMs通过他们的内存搜索，并专注于匹配他们寻找的地方，而基于位置的注意允许内存中的相对移动，使NTM可以循环整个记忆。这个过程Olah他们的博客中一图解释得很清楚。</p>
+
+<p>整个NTM工作的过程一目了然，里面有个卷积操作比较有意思，稍微有点tricky，大家可以去原文里看，叫circular convolution。
+之所以我说NTM是具有里程碑式意义的，是因为这种读写能力允许NTM执行许多简单的算法，这是超越传统神经网络的。 例如，他们可以学习在存储器中存储长序列，然后在其上循环、重复它。 当他们这样做，我们可以看到其在哪些位置进行读写以更好地了解NTM在做什么。一定意义上，作为图灵机的实现，它具有实现目前计算机能使用的所以算法，并且它是可学习的。不过要实现这个目标还有很多工作要做。
+自从原始的NTM论文，目前已经有一些令人兴奋的文章探索类似的方向。 神经GPU（Kaiser＆Sutskever，2015）克服了NTM无法添加和乘数的问题。（Zaremba＆Sutskever，2016）训练NTMs使用强化学习，而不是原始使用的可微分的读/写。 神经随机存取机器（Kurach et al.，2015）基于指针工作。（这就是模仿我们现在使用的计算机内存） 一些论文已经探索了可微分的数据结构，如堆栈和队列（Grefenstette等人2015; Joulin＆Mikolov，2015）。 和记忆网络（Weston et al.，2014; Kumar et al.，2015）是解决类似问题的另一种方法。</p>
+
+<p>在某些客观意义上，这些模型可以执行的许多任务 - 例如学习数的加法 - 客观上并不是很困难。 传统的搞程序合成的小伙伴会像吃午饭一样简单地解决这种问题。 不过，神经网络能够做许多其他的事情，像神经图灵机模型已经跨越了一个非常深刻的神经网络能力限制。我们可以明显地看出，神经网络可以不用“deep”，但却可以完成更加复杂的任务，这是从感知能力到推理能力的跨越。DeepMind最新的基于NTM的架构是DNC - Differentiable Neural Computer，改善了NTM的记忆读写机制，可以看作神经版的NTM，里面有不少有趣的东西，后面有空可以结合代码解读写一期。很快地我们将会看到不同网络的各种结合，通过引入多目标函数来整合感知能力和推理能力。
+开源代码
+计算机科学，无疑动手实践很重要，参考之后这些实现之后应该自己实现一遍
+Neural Turing Machine include Taehoon Kim’s(TensorFlow), Shawn Tan’s (Theano), Fumin’s (Go), Kai Sheng Tai’s (Torch), Snip’s (Lasagne);</p>
+
+<p>Differentiable Neural Computer: Mostafa-Samir(TensorFlow)</p>
+
+<p>Code for the Neural GPU: TensorFlow Models repository;</p>
+
+<p>Memory Networks include Facebook’s (Torch/Matlab), YerevaNN’s (Theano), and Taehoon Kim’s (TensorFlow).</p>]]></content><author><name></name></author><category term="sample-posts" /><category term="external-services" /><category term="formatting" /><summary type="html"><![CDATA[an example of a blog post with twitter]]></summary></entry><entry><title type="html">深度学习与神经科学相遇(五)</title><link href="https://jevenzh.github.io/blog/2019/meet-4/" rel="alternate" type="text/html" title="深度学习与神经科学相遇(五)" /><published>2019-12-15T21:01:00+00:00</published><updated>2019-12-15T21:01:00+00:00</updated><id>https://jevenzh.github.io/blog/2019/meet-4</id><content type="html" xml:base="https://jevenzh.github.io/blog/2019/meet-4/"><![CDATA[<p><a href="/blog/2019/meet-0/"> <strong>深度学习与神经科学相遇(一)</strong></a></p>
+
+<p><a href="/blog/2019/meet-1/"> <strong>深度学习与神经科学相遇(二)</strong></a></p>
+
+<p><a href="/blog/2019/meet-2/"> <strong>深度学习与神经科学相遇(三)</strong></a></p>
+
+<p><a href="/blog/2019/meet-3/"> <strong>深度学习与神经科学相遇(四)</strong></a></p>
+
+<h3 id="1-表征学习的重要性-the-importance-of-representation-learning">1. 表征学习的重要性 The Importance of Representation Learning</h3>
+<p>早在2012年，Benigo就在他的一篇综述中指出 “The success of machine learning algorithms generally depends on data representation, and we hypothesize that this is because different representations can entangle and hide more or less the different explanatory factors of variation behind the data.” （机器学习算法的成功通常取决于数据表征的质量，我们假设这是因为不同的表示形式可能会纠缠或者隐藏或多或少数据背后的不同解释因素。）</p>
+
+<p>Representation Learning: A Review and New Perspectives
+​arxiv.org/abs/1206.5538
+相信最为大家熟知的关于表征学习的工作可能是Word2Vec， 也就是大名鼎鼎的Distributed representations of words and phrases and their compositionality（至少我自己的机器学习知识是从这个学习它开始的），这一轮人工智能浪潮也才不多就是从这个工作发表的2012年前后开始兴起，至今短短数年，表征学习的研究经历了从Word2Vec到BERT这样的巨型模型的出现。当然，除了自然语言处理（NLP）还有机器视觉（CV）领域的大多数工作本质上也都是表征学习，比如图像分类中模型深度层级模型的所有隐藏层中其实都是对于图像特征的表征学习。这些无疑都体现了它在应用领域无可争议的重要性。说到分布式表征学习，那不得不提一下为什么我们需要里面所谓“分布式”的特性。</p>
+
+<p>在机器学习研究中，表征学习是指如何使用数值化的方式来描述所观察信号或者数据中的的有用信息的过程。我的机器学习启蒙就是从这样的一个问题开始的：如何在分析算法中表示一个字或词的意思？在Word2Vec没有出现之前，人们用[0,0,1,0,…]这样的向量（被称为“one-hot”的数值化表征方法）来描述它，假设一共只有1万个字，那这个向量的长度就是10000，每个位置都与一个文字一一对应。上述例子中只有第三个位置上为1，其他位置都为0，以此来表示第三个位置所对应文字。但是这种表征的缺点是显而易见的，如果一个字需要用一个一万维度的向量表示，那在分析一篇数万字的文章时，需要的计算内存都是非常夸张的。因此，追求更好的数值表征方法是非常自然的，这也是所谓“分布式”这一特性会被引入的一个原因。Mikolov等人的想法是与其用10000维度的[0,0,1,0,…]来表示一个词，不如使用长度仅为100的[0.2324, 1.9835, 0.0002, …]这样的实数值向量来表示，把原来一个位置上的信息分布到100个位置上，不仅保留了一个字词的独特信息，还能额外地将其与其他经常一起出现的字词之前的关系也一同表示在其中，用向量之间的距离来实现这一特性（这部分对于有机器学习经验的读者肯定再显然不过，但为了照顾没有机器学习经验的读者，还是非常粗略地描述一下）。然而，更值得思考的问题是：信号在人类大脑中又是如何被表示的，也具有“分布式”这种特性吗？毕竟大脑是我们所知唯一的智能载体，对大脑工作原理的研究与反向工程，将是我们实现人工智能的唯一捷径。</p>
+
+<p>脑神经科学研究很早就告诉了我们新大脑新皮层由神经元组成，但至今仍没有人确切知道人类新皮层中有多少个神经元细胞。最近的“primate scale up”方法估计这一数字大约为860亿个（Herculano-Houzel，2012）。 新皮层的瞬时状态是由部分神经元细胞在任何时间点是否处于活动状态决定的，加上在不同状态之间的转移过程，共同定义了我们的感知和思想。 激活的神经元是产生spikes（有人翻译为“峰点”，不过好像也没有抓住精髓）或动作电位的神经元。 关于新皮层的最值得关注的发现之一是：无论从什么角度看，神经元的活动都是稀疏的。这意味着在任何时间点，只有一小部分神经元在迅速spike，在某一时刻大部分的神经元都处于未被激活的状态。但具体被激活的这一小部分神经元在整个大脑皮层的位置是随着输入信号的不同而动态决定的，更重要的是，它们不是集中出现在某个局部区域，而是看似随机地分布在新皮层的很多位置，也就是我上面提到的“分布式”特性。此外，神经元激活时所体现的稀疏性（sparsity）可能从不到百分之一到百分之几不等，但始终很少。</p>
+
+<h3 id="2-大脑新皮层的结构-structure-of-the-neocortex">2. 大脑新皮层的结构 Structure of The Neocortex</h3>
+<p>人的大脑由脑干、基底神经节（basal ganglia）和小脑（cerebellum）等几个部分组成。这些器官松散地堆积在脊髓之上。新皮层只是大脑的另一个组成部分，而且从进化历史来看它是新形成的，但它在人的大脑中占据了约75%的体积，占据了人脑的主导地位。所有的哺乳动物都有新皮层，也只有哺乳动物拥有它。大约2亿年前，在三叠纪-侏罗纪的过渡时期，在爬行动物祖先和早期小型哺乳动物中，新皮层首次出现。</p>
+
+<p>在人类大脑中，新皮层是一片面积约为一张大餐巾纸（2500平方厘米）大小的神经组织，厚度大约为2.5毫米。它就在头骨下方，包裹着大脑的其他部位。新皮层可以被分成几十个区域，相邻而居，但当你看一个新皮层，你不会看到任何区域或分界线。这些区域是通过连接性来定义的，各区域通过将神经纤维束传送到新皮层下面的白质中从而相互传递信息。新皮层最显著的特点就是它的同质性。其中神经元细胞的类型和它们的连接模式几乎是相同的，即无论你看新皮质的什么部位，都几乎是一样的。这一事实在不同的哺乳动物物种中也是如此。尽管新皮层基本上是同质的，但一些神经科学家很快就指出了新皮层区域之间的差异。一个区域可能有更多的某种细胞类型，另一个区域有额外的细胞层，而其他区域则可能表现出连接模式的差异。但毫无疑问的是，神经皮层区域是非常相似的，而且这些差异相对较小。</p>
+
+<p><img src="https://pic4.zhimg.com/v2-94a646f9f02f8dbf16127f9531fc3ce7_b.jpg" width="100%" height="auto" />
+(a)传统的神经元模型，包括神经元细胞、树突、轴突； (b)Numenta制作的一个cortex columns模型，在这个2.5毫米厚的如同“大餐巾纸”一样的大脑皮层上可以找到上图所示的小圆柱形重复结构-column； Source：Numenta</p>
+
+<p><img src="https://pic1.zhimg.com/80/v2-01f8cf0851b37b37a811a723d28c531c_1440w.jpg" width="100%" height="auto" />
+为了更好地理解column，找到了一个非常直观的图，每一个column中都存在如上图(a)中所示神经元结构，每个column可以大致分为6个层级（最新研究有提出第7层），其中部分层级树突和轴突有规律地连接其他column。Source: researchgate.net</p>
+
+<p>现在其实我们已经可以大概看到更宏观的大脑是如何组织的蓝图。整个大脑是一个由很多大脑区域组成的分层结构，每个区域都与其下面在进化维度上更老的区域所形成的完全功能堆栈相互作用。感官信息进入大脑的新皮质区后主要出现在头部后部和侧部的区域。当信息沿着层次结构向上移动时，它最终会传入新皮层前半部分的区域。我们首先需要了解新皮层是如何从感官数据中建立起对于世界的基本模型，以及它是如何产生基本行为的。值得一提的是，真正的新皮层结构中的神经元结构比目前普遍的“shallow深度学习“（这个词听上去有些违和，但是这里的”shallow“是相对于体现出生物学细节的程度而言的）中所使用的”点神经元“模型复杂的多，当前的深度学习模型捕捉到了”层级性“、”垂直连接性“，但实际在大脑新皮层中，处于同一层级的神经元是由不同类型组成的，而且，它们之间仍然存在突触连接。然而，近年来深度学习领域出现的”注意力机制“从某些角度上来看已经有一些类似的特性，它为”朴素“的点神经元带来了更加丰富的连接类型（至少个人看来是这样的）。</p>
+
+<h3 id="3-稀疏分布式表征-the-sparse-distributed-representations">3. 稀疏分布式表征 The Sparse Distributed Representations</h3>
+<p>人工智能领域最有趣的挑战之一是知识表示问题（knowledge representation）。换句话说，就是用计算机可以工作的形式来表示日常的事实和关系，但事实证明传统的计算机科学方法是很难实现这一目标的。这里最根本本的问题是，我们对世界的知识并没有被划分成具有明确定义关系的离散事实。我们所知道的几乎所有的知识都有例外，概念之间的关系太多，定义不清，无法映射到传统的计算机数据结构上。然而，大脑却能对这些看似“混沌”的知识及它们直接的复杂关系进行有效表示，并能基于此进行高效推理。</p>
+
+<p>为了对大脑新皮层中神经元激活状态进行数值化描述，在BAMI中提出的“平行大脑”理论中，其描述新皮层工作的层级时序记忆算法（HTM）必须依赖于一种名叫“稀疏分布式表征（SDRs）”的向量化信息表示方法。SDRs是有数千位比特构成的二值向量。在任何时间点上，只有一小部分比特是1的，其余的是0的。HTM理论解释了为什么SDRs中总是有一个最小数量的1的分布，也解释了为什么1的比例必须很低，一般小于2%。</p>
+
+<p>SDRs具有一些及其重要且令人惊讶的特性。作为比较，可以考虑一下可编程计算机中使用的数据表示方式。一个词在计算机中的意义并不是这个词本身所固有的，如果你从计算机内存中的某个位置显示64位，你无法说出它所代表的意义（正如你直接观察目前的神经网络模型中的参数时的感觉一样，不同于计算机的二进制编码的是，我们仍不能系统性解释神经网络模型某一位置的参数变化将以何种方式影响模型的最终表现，因此它们仍被称为“黑匣子”）。在SDRs中，表征中的每一位比特都编码了该表征的语义属性；两个在同一比特位置上都为1的SDRs共享同一个语义属性，也就是说，表征和所表示信息的意义是一体的。两个SDRs共享的1比特越多，说明两个表示的语义越相似。SDRs解释了大脑如何进行语义泛化 - 它是这种表征方法与生俱来的属性。稀疏表征的另一个独特能力是，一组神经元可以同时激活多个表征而不混淆。就好像计算机内存中的一个位置可以容纳的不仅仅是一个值，而是可以同时容纳二十个值，而且不会被混淆! 我们把这个独特的特性称为 “联合属性”，并贯穿于整个HTM中，可以用于同时做多个预测。</p>
+
+<p><img src="https://pic2.zhimg.com/80/v2-3d2e48459c965b00edefa551c92e5901_1440w.jpg" width="100%" height="auto" /></p>
+
+<p>我们可以计算一下，在这样巨大的容量基础上，上图中这个激活状态下的表征遇到一个跟它出现50%以上重合的另一个SDRs表征（即false positive）的概率是多少？你一定会非常吃惊的（大概会在1e-20以下），这就是SDRs一个更强到无敌的特性 - 超强抗噪能力。</p>
+
+<p>在Numenta的这篇How Can We Be So Dense? The Benefits of Using Highly Sparse Representations论文中，详细介绍了SDRs的工作原理及其与目前在深度学习领域广泛使用的dense representation的详细对比，推荐有兴趣的读者可以进一步阅读。</p>
+
+<p>How Can We Be So Dense? The Benefits of Using Highly Sparse Representations
+​arxiv.org/abs/1903.11257</p>
+
+<h3 id="4-多模态表征学习-multimodal-representation-learning">4. 多模态表征学习 Multimodal Representation Learning</h3>
+<p>这部分将介绍多模态表征学习，之所以要紧接着SDRs进行这个话题的讨论是因为，首先，多模态在自我监督的表征学习中有着至关重要的作用，其次，作者认为SDRs在多模态场景下进行表征学习有着独一无二的优势。但在深入探讨多模态表征学习之前，我想为了让更多的读者跟上我们的探讨过程，有必要先对多模态、自主监督学习做一些适当的解释。</p>
+
+<p>我们对世界的体验是多模态的 – 我们看到物体、听到声音、感受质地、闻到气味，也能尝到味道。模态简单的说就是指事物发生或被体验的方式，当一个研究问题包括多种这样的模态时，它就被描述为多模态问题。为了让人工智能在理解周围的世界方面取得进展，它需要能够将这些多模态信号一起解读出来。多模态机器学习的目的是建立能够处理和关联来自多种模态的信息的模型。它是一个充满活力的多学科领域，其重要性日益增加，潜力非凡。事实上，当我们回顾小孩的学习过程，也就是人类大脑发育的过程，不难发现所有的学习都发生在多模态的场景下。想想我们是怎么学习写字的：先用眼睛看到书上的字，再跟着老师朗读，然后是亲自动起手来用笔将它“一笔一画”写出来，在这个过程中包含了视觉、声音和肌肉控制（或称为“motor control”，这也是极为重要的一个课题，我们会在以后的分享中单独探讨）等多个模态。多模态机器学习领域比较常见的挑战有如下几种：representation, translation, alignment, fusion, and co-learning，我们这里只讨论第一个部分。</p>
+
+<p>学习如何以利用多种模态的互补性和冗余性来表示和总结出现在多个模态中有同一意义的数据，或者说概念。多模态数据的异质性使得构建这种表征方式具有挑战性，比如，如何将来自异质源的数据结合起来；如何处理不同程度的噪声；以及如何处理缺失的数据。以有意义的方式表示数据的能力对于多模态问题至关重要，是任何试图解决智能问题的模型的核心。早在2011年，Andrew Ng和他的同事们已经在一篇论文中强调了多模态机器学习的重要性，并提出多个至今仍经常出现在各种相关研究中的多模态任务，还详细分析了Sparse Restricted Boltzmann machines（SRBM）此类多模态任务中的表现。不过稍有遗憾的是，这个工作中使用的一个audio-video双模态数据集中，视觉信号是说话是的口型（嘴唇运动）数据，这在作者看来并不是理想中的多模态问题。</p>
+
+<p>https://people.csail.mit.edu/khosla/papers/icml2011_ngiam.pdf
+​people.csail.mit.edu/khosla/papers/icml2011_ngiam.pdf</p>
+
+<p>多模态表征可分为上图中的两种，其中joint representation（联合表征）顾名思义是在各模态之间共享的唯一表示。而coordinated representation（协作表征）仍保留各模态自己的表征空间，但它们在比如欧式距离上具有高相似度。
+对上述多模态学习的概念有了基本的了解之后，我们还需要了解一下“自监督学习”的概念。作者不太愿意使用“无监督学习”这个词，因为其实所有的学习过程都是有监督的，区别只在于监督信号来源于自身还是外界，因此称之为“无监督”还是有些误导性。自监督学习为更好地利用非标签化数据提供了巨大的机会，这不仅是对于表征学习而言如此，即使以“监督学习”（以后如无特别强调，“监督学习”用来代表传统的从外界获取监督信号的学习模式）的方式进行学习时也是如此。（另外，此blog posts以后将会涉及更多关于图像、视频、控制问题的自主监督学习任务，以及当前相关研究领域的有趣想法，欢迎有兴趣的同学继续关注。）回到主题上，自监督的学习到底是如何发生的呢？自主监督可以大致分为两种：一种是在空间维度上寻找监督信息，另一种是在时间维度上发现监督信息。从下面两图中可以直观的理解这两种方法的精髓，然而本质上它们其实都是一样的：两种方法都基于自然信息（非人造，这很关键）在不同纬度上的“locality”-局部相似的性质。实际上，作者认为所有基于“互信息”mutual information的进行表征学习的方法本质上都是这样的， 包括前面提到的Word2Vec模型。广义地说，所有的生成模型都可以被认为是自我监督的，但目标不同。生成模型关注的是创建多样化和逼真的图像、声音或者模态的数据，而自监督表示学习关心的是产生对许多任务普遍有用的良好特征 - 这其实是表征学习的本质。</p>
+
+<p>Illustration of self-supervised learning by predicting the relative position of two random patches. Image source: Doersch et al., 2015</p>
+
+<p>How self-supervised learning tasks can be constructed in the temporal dimension (Image source: LeCun’s talk, see below)
+https://www.youtube.com/watch?v=7I0Qt7GALVk
+​www.youtube.com/watch?v=7I0Qt7GALVk
+此外，对于有兴趣的读者，下面两个相关的工作是非常值得一看的。第一个论文提出了一种通过自监督学习方法来从高维数据中提取有用的表征的通用框架，他们称之为对比预测编码（Contrastive Predictive Coding，CPC）。此方法的主要观点是通过使用强大的自回归模型在隐空间中预测未来，从而学习这种表征。通过使用概率对比损失（probabilistic contrastive loss）来诱导隐空间最大限度地捕获对预测未来样本有用的信息。它还通过使用负采样（negative sampling），使模型具有可追溯性。这个方法的特别之处在于，它可以同时应用到空间和时间维度上。</p>
+
+<p>Representation Learning with Contrastive Predictive Coding
+​arxiv.org/abs/1807.03748
+第二个论文提出了Correlational Recurrent Neural Network（CorrRNNN），这是一种新型的时态融合模型，用于融合多种输入模式，这些输入模式本身具有时间性。该方法的主要特点包括：(1) 同时学习联合表示和模态之间的时间依赖性，(2) 在目标函数中使用了多个损失项，包括一个最大相关损失项来增强跨模态互信息的学习，以及(3) 使用注意力模型来动态调整不同输入模态对最终联合表征的贡献。</p>
+
+<p>Deep Multimodal Representation Learning from Temporal Data
+​arxiv.org/abs/1704.03152
+有了以上的基础知识，我们终于可以愉快地继续往前讨论SDRs在自我监督的多模态表征学习中能起到哪些作用了。</p>
+
+<h3 id="5-稀疏分布式表征与多模态学习">5. 稀疏分布式表征与多模态学习</h3>
+
+<p>在生物进化的时间线上，神经皮层（neocortex）是最近才出现的，其他部分在其出现很久之前就已经存在。你可以认为人的大脑是由一个爬行动物的大脑（旧的东西）和附着在它上面的新皮质组成。大脑中旧的部分仍然负责感知环境和行动的能力，也就是说我们人类体内还有一个爬行动物，这也是达尔文进化论的证据之一。新皮质层并不是一个独立的系统，它学会了如何与旧的大脑区域互动和控制，以创造新奇和改进的行为模式。</p>
+
+<p>神经皮层有两个基本的输入，一个是直接来自各感官系统的信号，另一个是大脑正在执行的运动指令的拷贝。一般来说，感官数据首先在感觉器官如视网膜、耳蜗、皮肤和关节中的感觉细胞中进行处理。然后，这些数据会进入大脑中的旧的区域进行进一步的处理，并控制基本行为。在这条路径上的某个地方，神经元会将其轴突一分为二，并将一个分支发送到新皮层。新皮层的感觉输入，本质上就是“旧”大脑区域得到的感官数据的复制。第二个输入是大脑旧有部分正在执行的运动指令的复制，也就是上述分叉部位的另一个分支。例如，行走的部分动作由脑干和脊髓中的神经元控制，这些神经元也将其轴突一分为二，一个分支在旧脑中产生行为，另一个分支则进入新皮层。另一个例子是眼球运动，它是由一个叫上丘脑的旧脑结构控制的，上级丘脑神经元的轴突将其活动的轴突发送一份拷贝到新皮质，让新皮质知道即将发生的运动。本人认为眼球这个例子非常重要，但是绝大多数的人工智能研究者都忽视了，特别是在机器视觉方面。更加值得注意的是，这种运动整合几乎是大脑的一种普遍属性（即所谓的sensory-motor system integration）。</p>
+
+<p>(a) SDRs for multi-modality sensory integration; (b) Feedback input is a copy of the motor control signal; (c) All human sensory modalities are integrated at certain level in the neocortex and some of them have feedback inputs;
+如上图所示，在大脑皮层中，多种模态的输入信号以及旧脑部分的运动指令的拷贝都会被整合到一个处于更高层级的区域上去。这个整合的路径大致包括了6-7个具有层级关系的大脑皮层区域（这应该就是所谓“深度学习-Deep learning”这个术语中deep这一词的生物学依据，但显然目前主流的深度学习极大的拓展了这一概念，其中就包含“误差反向传播-Back propagation”的引入），图中仅主要显示出了第一层和最后一层，中间半透明的部分作为省略的中间层级的表示。如果将旧脑的运动控制指令也当作是一种模态信号，那么它们也可以被被看作神经皮层进行多模态信号整合一部分。事实上，由于神经皮层对于所有的模态信号都采取同样的“算法”将它们进行处理、整合，那么从该“算法”的角度来看，神经皮层无论对于哪种输入都是一视同仁的。</p>
+
+<p>举一个具体的例子，想想我们是怎么认识“老虎”之一概念的，大多数人一开始应该是眼睛从儿童书上获得了其被“抽象”过的视觉表示，于此同时你的耳朵会听到不断重复的“这是什么呀…老虎，tiger…”的声音，大概率是出自你的爸爸妈妈。然后你开始在书本上认字，通过眼睛看到了“老虎”这个词，这时候它的发音引发了当年你爸妈在你大脑里留下的知识的“阴影”，从而将你神经皮层上被当年书本上的老虎激活的神经元细胞再次激活，不过这次特别的是，这群被激活的神经元多了一群小兄弟，它们是同时被声音的“老虎”和文字的“老虎”激活的那些神经元细胞。历经千山万水，它们最终还是在最高层级的神经皮层区域相遇，并从此相伴一生。如果有一天，你独自一人在森林里真正遇到了老虎，那在这群神经元小兄弟们结束它们的生命之前（当然，如果你能跑路成功那它们还不至于全军覆没），它们还会引来一群新的小兄弟，也就是被真实的老虎，包括它的外观、吼叫声、气味以及你自身应激反应腿抖或者拔腿就跑的控制身体运动的神经信号，同时激活的“新的”神经元细胞们（这里的新指的是该区域以前从来没有被激活的神经元），至此，你才可以说真正全面地认识了“老虎”这一概念。以上就是大脑整合多模态信息的过程，我相信这也同样适用于你一生中学到的其他几百万至几千万个概念。</p>
+
+<p>最后，我们来分析一下SDRs为什么在这个过程中起到至关重要的作用。基于个人目前的知识，我认为有以下几点是SDRs独有并十分重要的特性：</p>
+
+<p>（1）无须额外系统容量即可实现多输入源整合。一个cortical column内部某一层的部分区域）接收多个来自较底层的SDRs作为输入，通过神经皮层的内置算法（HTM）处理之后得到一个可以有效的表示这些输入源集合的新的被激活神经元细胞集合（即一个SDRs），这一过程不需要该区域增加额外的神经元细胞就能完成。</p>
+
+<p>在目前主流的深度学习的神经网络里面，如果需要整合多个输入源，也有可以不增加数据维度的方法，比如，对张量做加法、取平均，甚至pooling（需要padding）等等操作。但是这样做的最大缺点是，得到的结果很难形成对该整合的唯一表示。比如，一个实数域的张量可以理论上被分解成无限多的两个张量的和，这样在整合后的表征空间中就存在无数种与该结果存在歧义的表征。这是在学习高效知识表征的过程中我们想要极力想要避免的。所以，目前在深度学习领域，我们需要整合多个输入源的时候，大家常用的操作是“拼接” - concatenation可以发生在不同的张量维度上，但是都会增加系统的capacity，也就大大增加了计算复杂度，</p>
+
+<p>（2）在不同层级区域同时发生的跨模态纠错/容错机制。换句话说，跨模态的“监督学习”-自我监督，无时无刻都在我们的大脑中发生，而且它发生在所有神经皮层的层级中，并不是只存在于最高层，或者说“输出层”。</p>
+
+<p>（3）自我监督学习到的跨模态表征是能够持续集成的。换句话说就是持续学习，或者online learning，同时还具有很高的可塑性，但是这种影响必须是数据驱动的。</p>
+
+<p>这一篇暂时写到这里。下一篇我们再继续学习和分析与SDRs并肩作战的学习算法：Spatial Pooling 和 Temporal Pooling。</p>
+
+<h3 id="references">References</h3>
+<p>Bengio, Yoshua, Aaron Courville, and Pascal Vincent. “Representation learning: A review and new perspectives.”IEEE transactions on pattern analysis and machine intelligence35.8 (2013): 1798-1828.</p>
+
+<p>Yang, Carl, et al. “Heterogeneous Network Representation Learning: Survey, Benchmark, Evaluation, and Beyond.”arXiv preprint arXiv:2004.00216(2020).</p>
+
+<p>Guo, Wenzhong &amp; Wang, Jianwen &amp; Wanga, Shiping. (2019). Deep multimodal representation learning: a survey. IEEE Access. PP. 1-1. 10.1109/ACCESS.2019.2916887.</p>
+
+<p>Oord, Aaron van den, Yazhe Li, and Oriol Vinyals. “Representation learning with contrastive predictive coding.”arXiv preprint arXiv:1807.03748(2018).</p>
+
+<p>Daokun, Zhang &amp; Yin, Jie &amp; Zhu, Xingquan &amp; Zhang, Chengqi. (2017). Network Representation Learning: A Survey. IEEE Transactions on Big Data. PP. 10.1109/TBDATA.2018.2850013.</p>
+
+<p>W. Guo, J. Wang and S. Wang, “Deep Multimodal Representation Learning: A Survey,” inIEEE Access, vol. 7, pp. 63373-63394, 2019.</p>
+
+<p>Yang, Xitong, et al. “Deep multimodal representation learning from temporal data.”Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2017.</p>
+
+<p>Baltrušaitis, Tadas, Chaitanya Ahuja, and Louis-Philippe Morency. “Multimodal machine learning: A survey and taxonomy.”IEEE transactions on pattern analysis and machine intelligence41.2 (2018): 423-443.</p>
+
+<p>Jiquan Ngiam, Aditya Khosla, Mingyu Kim, Juhan Nam, Honglak Lee, and Andrew Y. Ng. 2011. Multimodal deep learning. In Proceedings of the 28th International Conference on International Conference on Machine Learning (ICML’11). Omnipress, Madison, WI, USA, 689–696.</p>]]></content><author><name></name></author><category term="sample-posts" /><category term="AI," /><category term="machine" /><category term="intelligence" /><summary type="html"><![CDATA[Biological and Machine Intelligence]]></summary></entry><entry><title type="html">深度学习与神经科学相遇(四)</title><link href="https://jevenzh.github.io/blog/2019/meet-3/" rel="alternate" type="text/html" title="深度学习与神经科学相遇(四)" /><published>2019-11-20T15:09:00+00:00</published><updated>2019-11-20T15:09:00+00:00</updated><id>https://jevenzh.github.io/blog/2019/meet-3</id><content type="html" xml:base="https://jevenzh.github.io/blog/2019/meet-3/"><![CDATA[<!-- This theme implements a built-in Jekyll feature, the use of Rouge, for syntax highlighting.
+It supports more than 100 languages.
+This example is in C++.
+All you have to do is wrap your code in a liquid tag:
+
+
+{% highlight c++ linenos %}  <br/> code code code <br/> {% endhighlight %}
+
+
+The keyword `linenos` triggers display of line numbers.
+Produces something like this:
+
+
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="code"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="k">const</span> <span class="err">\</span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="n">string</span> <span class="n">myString</span><span class="p">;</span>
+
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"input a string: "</span><span class="p">;</span>
+    <span class="n">getline</span><span class="p">(</span><span class="n">cin</span><span class="p">,</span> <span class="n">myString</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">myString</span><span class="p">.</span><span class="n">length</span><span class="p">();</span>
+
+    <span class="kt">char</span> <span class="n">charArray</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span> <span class="o">*</span> <span class="p">[</span><span class="n">length</span><span class="p">];</span>
+
+    <span class="n">charArray</span> <span class="o">=</span> <span class="n">myString</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">charArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="s">" "</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+ -->
+
+<p><a href="/blog/2019/meet-0/"> <strong>深度学习与神经科学相遇(一)</strong></a></p>
+
+<p><a href="/blog/2019/meet-1/"> <strong>深度学习与神经科学相遇(二)</strong></a></p>
+
+<p><a href="/blog/2019/meet-2/"> <strong>深度学习与神经科学相遇(三)</strong></a></p>
+
+<h3 id="什么是智能what-is-intelligence">什么是智能（What is intelligence）？</h3>
+
+<p>从历史上看，智能是用行为来定义的。例如，如果一个系统能下象棋，或驾驶汽车，或回答人类提出的问题，那么它就表现出了智能，图灵测试是这个思路最著名的例子。我认为这种定义智能的方法在两个方面是失败的。首先，在生物学中，有许多关于智能的例子，虽然它们有别于人类的智能，但仍会通过大多数行为测试。例如，海豚、猴子和人类都是具有智能的，然而这些物种中只有一种可以下棋或开汽车。类似的，机器智能也存在于不同的智能等级之中，从类似鼠标的低级“智能”到各方面都超越人类能力的“超级智能”，更重要的是，我们可以将把智能机器应用到那些在生物世界中没有对应物的地方。因此，将注意力集中在发展与人类类似的智能表现上是非常有局限性的。</p>
+
+<p>我们拒绝接受基于行为来定义智能的第二个原因是，它们没有捕捉到智能的不可思议的灵活性来源 - 新皮质（neocortex）。最前沿的脑神经科学研究发现，大脑皮层使用的算法其实在不用的位置上都是一样的，这让它具有极大的灵活性，是使人类能够如此成功的核心所在。人类可以学习执行大量的任务，而这些任务在进化上是没有先例的，因为我们的大脑拥有可以应用到几乎所有任务的算法，一种极具灵活性的学习算法。新皮层的视觉方式与听觉或感觉的方式是一样的。这种普遍的方法在人类身上创造了语言、科学、工程和艺术。当我们把智能定义为解决特定任务时，如下棋，那么往往创造出的也是具体的解决方案，它们并不是通用的智能，能赢棋牌游戏的程序，是学不会开车的。如今人们把这些针对具体任务的解决方案称之为狭义人工智能。我们需要理解并嵌入到智能机器中的是生物智能的灵活性，而不是解决某些特定任务的能力。注重灵活性的另一个好处是网络效应，大脑新皮层可能并不总是最善于解决任何特定的问题，但它在解决大量的问题上都是非常出色的。软件工程师、硬件工程师以及应用工程师们自然而然更倾向于通用的解决方案，这也被称为“通用人工智能”研究，随着更多的目光和投资开始集中在通用人工智能的研究上，相对于早期解决具体任务的狭义人工智能方法，对于通用智能算法的研究进展会更快，也会变得更好。“网络效应”会大大促进一项技术在整个领域中的大范围应用，甚至达到指数级的加速发展，这种动态也将在机器智能领域展开。</p>
+
+<p>因此，我们根据系统表现出的灵活性来定义系统的智能程度：学习的灵活性和行为上的灵活性。由于大脑新皮层是我们所知道的最灵活的学习系统，所以我们通过以下原则来衡量一个系统的智能程度：系统在多大程度上包含了新皮质层工作原理。Numenta的这项研究就是试图列举和理解这些新皮层原理（principles）的一个尝试。任何包含有这本书中所涉及的计算原则的系统都会表现出类似于大脑皮层的灵活性，从而体现出类似于大脑皮层的智能。通过将系统做大或做小，并将其应用于不同的传感器和计算系统中，从而可以创造出各种不可思议的智能机器。其中许多系统将比人类的大脑新皮层小得多，另外一些可能会在内存大小方面比人类大得多，但它们都是智能的（类似的，如果我们把智能看成是一个渐进积累的过程的话，那么老鼠、海豚、大象也都具有智能，只是较于人类它们的智能仍处于低级阶段）。</p>
+
+<p><br /></p>
+<h3 id="人类可否复制自身的智能can-we-replicate-human-intelligence">人类可否复制自身的智能（Can we replicate human intelligence）？</h3>
+
+<p>21世纪是人类进化的分水岭。我们正在解开大脑如何工作的谜团，开始制造出与大脑相同原理的机器。我们正处于机器智能时代，这使得有益的应用和科学进步得以迸发。大多数人在直觉上看到了理解人脑如何工作的价值。我们很容易看到，大脑理论如何能够导致治疗和预防精神疾病，或者如何能够导致更好的教育孩子的方法。这些实际的好处证明了正在进行的逆向工程化大脑的重大努力是合理的。然而，这些好处远远超出了近期和实际的范围。人类的大脑定义了我们的物种。在大多数方面，我们是一个不起眼的物种，但我们的大脑是独一无二的。我们大脑的巨大体积，以及它独特的设计，是人类成为地球上最成功的物种的原因。</p>
+
+<p>事实上，人类的大脑是我们所知道的宇宙中唯一能创造和分享知识的东西。我们的大脑能够发现过去，预知未来，解开现在的奥秘。因此，如果我们想了解我们是谁，如果我们想扩展我们对宇宙的知识，如果我们想探索新的领域，我们需要对我们如何认识、如何学习，以及如何建立智能机器来帮助我们获得更多的知识有一个清晰的认识。大脑理论和机器智能的最终目标是新知识的获取和传播，这将会给社会带来无数的好处（也许这就是智能的终极意义吧），机器智能给我们日常生活中带来有益影响，它们将等同于并最终超过当今的可编程计算机。</p>
+
+<p>但是，智能机器究竟会如何工作，它们会做什么？如果你向一个外行人建议，制造智能机器的方法是先了解人脑的工作原理，然后再制造出与人脑工作原理相同的机器，他们通常会说”这很有道理”。然而，如果你向人工智能和机器学习的科学家提出同样的理念，很多人会不同意。你听到的最常见的反驳是 “飞机不会扇动翅膀”，暗示大脑如何工作并不重要，或者更糟糕的是，研究大脑会把你引向错误的道路，就像制造一架扇动翅膀的飞机一样。这种比喻既是误导，也是对历史的误解。莱特兄弟和其他成功的航空先驱们都明白飞行的原理和需要推进力的区别。鸟的机翼和飞机的机翼的工作原理是一样的，在莱特兄弟制造飞机之前，必须先了解这些原理。事实上，他们研究了鸟类是如何滑翔的，并在风洞中测试了机翼的形状，以了解升力的原理。而拍打机翼则不同，它是一种推进手段，在制造飞行器时，用于推进的具体方法就不那么重要了。以类比的方式，我们需要先了解智能的原理，然后才能建造智能机器。考虑到我们所掌握的智能系统的例子只有大脑，而对于智能的原理，我们仍不能明显地理解它，我们必须研究大脑才能从中学习。然而，就像飞机和鸟类一样，我们不需要像飞机和鸟类一样，把大脑所做的一切事情都做了，也不需要像大脑一样实现智能原理。我们有大量的软件和芯片资源，可以用新奇而刺激的方式创造出智能机器。建造智能机器的目标不是为了复制人类的行为，也不是为了建立一个大脑，更不是为了创造机器去做人类所做的事情。建造智能机器的目标是创造出与大脑相同的工作原理的机器，这些机器能够以计算机和大脑无法做到的方式学习、发现和适应。</p>
+
+<p>如今的深度学习理论在我看来只是借鉴了很少的生物学发现而形成的计算理论，甚至都还不能称为完整的“理论”。原因显而易见，它对于研究它的科研人员和工程师们来说都是一个黑匣子（blackbox），对于此类系统内部的“计算动力学”（computational dynamics）目前仍处于研究中，更别说要让普通人理解它。目前深度学习所带来的最大创新其实主要是利用多层的卷积计算来替代传统的特征工程（feature engineering，可以简单理解为是在学习过程中寻找有用信息的过程），加之自动化链式求导算法的发明和大规模算力的普及，就已经带来了一波人工智能热潮。但反观该研究领域的核心地带，虽然出现了很多目前已被大众熟知并大规模应用的方法（我更愿意称它们为“techniques”），比如对抗生成式网络GAN、注意力机制、深度强化学习DRL、元学习Meta Learning等等，但是在真正的智能理论上，人工智能跟80年代并没有发生质的改变，Deep learning中所使用的神经元模型，在很多我们看来“非智能”的动物身上都存在，并没有任何人类智能的特色。因此，我们需要新的智能理论，基于神经科学的更具生物解释性的理论！</p>
+
+<p>Biological And Machine Intelligence（BAMI）这本书中所描述的机器智能原理都来自于对大脑的研究。Numenta的研究人员使用神经科学术语来描述大部分的原理，并描述了这些原理是如何在大脑中实现的。这些智能原理本身就可以理解，无需参考大脑，但在可预见的未来，最容易理解的是 在大脑的背景下理解这些原则，因为大脑会不断地对许多开放性问题的解决提出建议和制约。</p>
+
+<p><br /></p>
+<h3 id="平行大脑与层次时序记忆理论介绍-the-thousand-brains-theory-of-intelligence-and-hierarchical-temporal-memory">“平行大脑”与层次时序记忆理论介绍 The Thousand Brains Theory of Intelligence and Hierarchical Temporal Memory</h3>
+
+<p>注：个人不喜欢将其称之为“千脑理论”，从理论内容来看认为“平行大脑”更适合，但只是个人观点仅供参考。
+“平行大脑”智能理论是基于2019年的一篇论文中概述的发现（A Framework for Intelligence and Cortical Function Based on Grid Cells in the Neocortex），该论文描述了如何大脑其实不会只建立一个模型去学习一个物体或概念，相反，它平行地建立了许多模型，使用不同的输入并从不同的输入中建立了许多模型来描述同一个物体或概念。然后，这些模型们一起投票，对他们所感知到的东西达成共识。这种共识投票得出的结果就是我们所感知到的东西。它就好像是你的大脑实际上是成千上万的大脑同时工作（因此“the thousand brains”或者“parallel brains”其实都可以是合理的名称）。</p>
+
+<p>虽然“平行大脑”理论是一种生物学上可解释的理论，也许也是最符合生物学实际的关于新皮层是如何工作的理论，但它并没有试图包括所有的生物学细节。因此，HTM算法并没有包括所有的生物细节。例如，在多种类型神经元的集体激活过程中，生物新皮层表现出几种类型的节律性神经活动。毫无疑问，这些节律性的神经元行为对于生物大脑来说是必不可少的。但HTM算法并不包括这些节律。因为我们不相信它们起着信息理论上的作用。最好的猜测是，这些节律性是生物大脑用来同步动作电位是所需要的，但在HTM的软件和硬件实现中没有这个问题。当然如果在未来，研究人员发现此类具有节奏的神经活动是智能的必要条件，而不仅仅是生物大脑，那么Numenta会修改HTM算法（更准确的说是一个算法合集），将其纳入其中。有很多生物学上的细节，同样不是HTM的一部分。HTM中包含的每一个功能，都是由于这一特征正能满足一或多个信息理论上的需求（information-theoretical need）。</p>
+
+<p>“平行大脑”理论并不是一个关于整个大脑的理论，它只涉及到新皮层及其与一些紧密的丘脑（thalamus）和海马（hippocampus）等相关结构。新皮质（neocortex）是我们所认为的大部分智力的所在，但它不负责情绪、机体平衡和其他比如呼吸等基本行为，在进化上更早的大脑的其他部分会负责执行这些功能。大脑的这些较老的部分已经在进化的压力下经历了更长的时间，虽然它们内部也包含一些神经元，但是它们在结构和功能上是异质的。我们对模拟整个人类大脑或使机器是类似于人并具有类似于人的情感和欲望是不感兴趣的。（个人也认为这样是没有多大意义的，因为在完成一些需要理性的任务上，情绪就是人类最大的弱点。）因此，BAMI中定义的智能机器不是可能通过图灵测试，或者像科幻小说中的人形机器人一样。这种区别并不意味着智能机器的作用将是有限的。许多机器将是简单的，不厌其烦地在海量的数据中寻找不寻常的模式，而其他的机器则能够在探索人类不适合的领域中表现非常快速和智能。我们将看到智能机器将类似于我们在可编程计算机中看到的各种智能机器。有些计算机非常“微小”，嵌入在汽车和电器等占据了整个建筑或分布在各大洲，而其他的则占据了整个建筑或分布在各大洲。智能机器将有类似的大小、速度和应用的多样性，但它们不会被编程，而是会学习。</p>
+
+<p><img src="https://pic1.zhimg.com/80/v2-01116ad13500fd68f1a3b0a0e9bdff24_1440w.jpg" width="100%" height="auto" /></p>
+
+<p>“平行大脑”理论不能用一个或几个数学方程简明扼要地表达出来。HTM算法的工作原理是一起产生知觉和行为。在这方面，HTM就像计算机一样，计算机不能被纯粹地描述为用数学的方式来描述。我们可以理解它们的工作原理，我们可以模拟它们，计算机科学的子集可以用形式化的数学，但最终我们必须建立它们，并对它们进行实证检验，以表征它们的性能。同理。HTM的某些部分可以用数学方法来分析。例如，该研究中关于稀疏分布式表示的章节就是 主要是关于稀疏表示的数学属性。但其他部分的理论就不太适合于形式主义了，如果你非要找一个简洁优雅的数学公式来表达智能，大概率上你是找不到的。这样一来，大脑理论更像是遗传理论，不那么像物理学。</p>
+
+<p>后续将继续介绍以下内容：</p>
+
+<p>稀疏分布式表征（Sparse Distributed Representations，SDRs）</p>
+
+<p>Spatial Pooling算法解析</p>
+
+<p>Temporal Memory算法解析</p>]]></content><author><name></name></author><category term="sample-posts" /><category term="AI," /><category term="machine" /><category term="intelligence" /><summary type="html"><![CDATA[Biological and Machine Intelligence]]></summary></entry><entry><title type="html">深度学习与神经科学相遇(三)</title><link href="https://jevenzh.github.io/blog/2019/meet-2/" rel="alternate" type="text/html" title="深度学习与神经科学相遇(三)" /><published>2019-11-15T15:09:00+00:00</published><updated>2019-11-15T15:09:00+00:00</updated><id>https://jevenzh.github.io/blog/2019/meet-2</id><content type="html" xml:base="https://jevenzh.github.io/blog/2019/meet-2/"><![CDATA[<!-- This theme implements a built-in Jekyll feature, the use of Rouge, for syntax highlighting.
+It supports more than 100 languages.
+This example is in C++.
+All you have to do is wrap your code in a liquid tag:
+
+
+{% highlight c++ linenos %}  <br/> code code code <br/> {% endhighlight %}
+
+
+The keyword `linenos` triggers display of line numbers.
+Produces something like this:
+
+
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="code"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="k">const</span> <span class="err">\</span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="n">string</span> <span class="n">myString</span><span class="p">;</span>
+
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"input a string: "</span><span class="p">;</span>
+    <span class="n">getline</span><span class="p">(</span><span class="n">cin</span><span class="p">,</span> <span class="n">myString</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">myString</span><span class="p">.</span><span class="n">length</span><span class="p">();</span>
+
+    <span class="kt">char</span> <span class="n">charArray</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span> <span class="o">*</span> <span class="p">[</span><span class="n">length</span><span class="p">];</span>
+
+    <span class="n">charArray</span> <span class="o">=</span> <span class="n">myString</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">charArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="s">" "</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+ -->
+
+<p><a href="/blog/2019/meet-0/"> <strong>深度学习与神经科学相遇(一)</strong></a></p>
+
+<p><a href="/blog/2019/meet-1/"> <strong>深度学习与神经科学相遇(二)</strong></a></p>
+
+<p>上次说到误差梯度的“反向传播”（Backpropagation），这次咱们从这继续。需要说明的是，原文太长，有的地方会有些冗长啰嗦，所以后面的我会选择性地进行翻译，然后附上一些思考和问题的注释，会更像读书笔记吧，这样也可以让学习过程更高效一些。</p>
+
+<h2 id="222-biologically-plausible-approximations-of-gradient-descent">2.2.2. Biologically plausible approximations of gradient descent</h2>
+<p>这一节主要讲的是为了在生物学习中实现机器学习中的误差梯度的反向传播，更复杂的gradient propagation机制应该被考虑。虽然这些机制在细节上不同，但是它们都调用具有相位误差的反馈连接。学习是通过将预测与目标进行比较来进行的，并且预测误差用于驱动自底向上活动中的自上而下的改变。</p>
+
+<p>文中很多地方提到neuron spike, 神经元的电活动，但不代表该神经元一定被激活。个人觉得比较难翻译, “神经元动作电位”在有的地方不太通顺，所以后面就直接使用英文来描述这个概念。Google一番之后找到的定义是：During a spike, or action potential as it is called by neuroscientists, a neuron’s membrane potential quickly rises from values around -65 mV to about 20 mV and then drops back to -65 mV.
+反向传播的近似也可以通过神经活动的毫秒级定时来实现（O’Reilly et al., 2014b）。例如，Spike timing dependent plasticity（STDP）（Markram et al., 1997）是一些神经元的特征，其中突触权重变化的符号取决于突触前后spike的精确至毫秒量级相对定时。这通常被解释为测量突触前和突触后之间的因果关系的潜力的Hebbian可塑性：突触前的spike可能有助于突触后的spike，仅当两者发生的时间间隔很小的时候。为了实现反向传播机制，Hinton提出了一种替代解释：神经元可以在它们的激活率（firing rate）的时间导数中对反向传播所需的误差导数类型进行编码（Hinton, 2007, 2016）。于是STDP就与这些对误差导数敏感的学习规则相关联（Xie and Seung, 2000; Bengio et al., 2015b）。换句话说，在适当的网络环境中，STDP学习可以产生反向传播的生物实现。</p>
+
+<blockquote>
+  <p>STDP，Wikipedia：是大脑自身调整其神经元之间的连接强度的生物过程。 该过程基于特定神经元的输出和输入动作电位（或spike）的相对定时来调整连接强度。 STDP过程部分解释神经系统的活性依赖性发展，特别是关于Long-term potentiation和Long-term depression。（从定义可以看出它与Backpropagation之间有很高的相似性）生物神经网络可以近似反向传播的另一种可能机制是“反馈比对”（feedback alignment）（Lillicrap et al., 2014; Liao et al., 2015）。在feedback alignment中，反向传播中的反馈通路由一组随机反向连接代替，一个层的误差导数是通过该反馈通路从后续层的误差导数来计算的，而不依赖于前向权重。根据前馈和反馈连接之间的突触归一化机制和近似符号一致性的存在（Liao et al., 2015），计算误差导数的这种机制几乎与各种任务的反向传播一样好。实际上，前向权重能够适应性地使网络进入一种状态，其中随机后向权重实际上可以携带用于近似梯度的信息。这是一个引人注目和令人惊讶的发现，并且它表明我们对梯度下降优化的理解，特别是反向传播本身起作用的机制仍然是不完全的。在神经科学中，我们发现几乎无论在哪里找到前馈连接，哪里就伴随有反馈连接，讨论它们的作用是很多研究理论的主题（Callaway, 2004; Maass et al., 2007）。应当注意的是，feedback alignment本身并不精确地指定神经元如何表示和利用误差信号，它仅放宽对误差信号的传送的约束。因此，feedback alignment更多的是作为反向传播的生物学实现的基础，而不是完全生物学实现本身。因此，可以将其并入这里讨论的几个其他方案中。</p>
+</blockquote>
+
+<p>毋庸置疑，大脑计算误差导数的方式是复杂的，相信这与其使用多样化且相互作用的动态目标函数机制是紧密联系在一起的。而如今深度学习中的误差导数传播方法被Backpropagation所主导，相比之下，chain rule显得有些naive。值得注意的是这里提到的随机反馈连接，这是一个非常有意思的研究方向，如果添加注意力机制，可以理解为使用全局的信息对反向传播的误差导数进行近似，会加速收敛吗？
+这些讨论的核心实际上是：使用另一个（或多个）神经网络去做求导的工作，至于为什么要这么做，可能就会涉及到需要对普通的微积分（黎曼积分）的局限性、函数空间等等进行讨论了，这就需要很深入的数学知识了。
+这里附上一篇最近比较前沿的关于合成梯度的paper：Decoupled Neural Interfaces using Synthetic Gradients，个人觉得它和NTM（Neural Turing Machine）、GAN（Generative Adversarial Networks）一样，很可能是具有”里程碑”式意义的
+上述的反向传播的“生物学”实现仍然缺乏生物实际性（biological realism）的一些关键方面。 例如，在大脑中，神经元往往是兴奋性的或抑制性的，但不是两者同时存在，而在人工神经网络中，单个神经元可向其下游神经元同时发送兴奋性和抑制性信号。 幸运的是，这种约束不会限制其可以学习各种函数的能力(Parisien et al.,2008; Tripp and Eliasmith,2016)。 然而，其他生物学考量则需要更详细地看待：生物神经网络的高度重现（recurrent）性质，其显示在时间尺度上丰富的动力学特性（dynamics, 这个词也很难翻译，个人更倾向于“动态”），以及哺乳动物大脑中的大多数神经元通过spike通信的事实。 我们下面依次考虑这两个问题。</p>
+
+<h4 id="2221-temporal-credit-assignment">2.2.2.1. Temporal credit assignment</h4>
+
+<p>再次遇到credit assignment，之前有翻译成“信用分配”，还是有些模糊，有人翻译成“功劳分配”，有些“能者多劳”的感觉，通俗地解释是：认为表现好的组件就多给它一些权重，这样对实现目标更有利
+这个部分主要讲的是BPTT（backpropagation through time），主要就是针对RNN，就不赘述了，就是把backpropagation在时间尺度上展开，然后可以把credit assign到不同的time steps（或者internal state）。不过作者表示：While the network unfolding procedure of BPTT itself does not seem biologically plausible, to our intuition, it is unclear to what extent temporal credit assignment is truly needed (Ollivier and Charpiat, 2015) for learning particular temporally extended tasks. BPTT生物学的生物学可解释性目前还是不太确定的。</p>
+
+<p>如果系统被授予对时间上下文（context）的适当存储器存储和表示（Buonomano and Merzenich, 1995; Gershman et al., 2012, 2014）的访问，这可以潜在地减少对时间尺度上credit assignment的需要， 可以“空间化”时间credit assignment的问题。 例如，Memory Network（Weston et al., 2014）</p>
+
+<p>有兴趣的读者可以看看Memory Network，引入记忆存储之后网络将具备实现推理的基础，这个话题就会引发一系列的关于Memory Augmented Networks的讨论和研究，目前是非常热门的，比如DeepMind的DNC就是一个对这类网络更广义的扩展，已经抽象到了另一种计算机实现，这个论文是发在Nature上的。
+Werbos在他的“error critic”中提出，通过学习以与强化学习中的价值函数的预测类似的方式学习预测BPTT的梯度信号（costate），可以实现对BPTT的online approximation（Werbos and Si, 2004）。这种想法最近被应用于（Jaderberg et al., 2016，就是之前提到合成梯度的那个研究），以允许在训练期间网络的不同部分的解耦，并且便于通过时间的反向传播。广义上，我们才刚开始理解神经活动本身如何表示时间变量（Xu et al., 2014; Finnerty et al., 2015），以及如何经常性的网络可以学习生成人口变化随时间的轨迹（Liu and Buonomano, 2009）。此外，正如我们在下面将讨论的，一些cortical models也提出，除了BPTT还可通过其他方式去训练网络以完成序列预测任务，甚至是在线学习（O’Reilly et al., 2014b; Cui et al., 2015; Brea et al., 2016）。可以使用很多更实际的手段来近似BPTT。</p>
+
+<h3 id="2222-spiking-networks">2.2.2.2 Spiking networks</h3>
+<p>（这个不太熟悉，虽然大概60年前就提出了）</p>
+
+<blockquote>
+  <p>这个部分不太熟悉，跳过一些。但里面提到的快速、慢速连接是非常赞的idea，在Bengio的一些演讲中好像有提到，但我还没有很理解具体如何实现这种不同速率的计算连接
+使用具有多个时间尺度的循环连接（recurrent connection）可以消除在直接训练spike reccurrent networks的过程中反向传播的需要（Bourdoukan and Denève, 2015）。 快速连接将网络维持在慢速连接能够局部访问全局错误信号的状态。 虽然这些方法的生物依据仍然是未知的，它们都允许在spike networks中学习连接权重。</p>
+</blockquote>
+
+<p>这些新颖的学习算法说明了一个事实，我们才刚开始理解生物神经网络中的时间动力学特性和时间和空间credit assignment机制之间的联系。 然而，我们认为在这里现有的证据表明生物似真的神经网络可以解决这些问题 - 换句话说，在生物神经元的spiking networks的上下文环境下，复杂的与时间历史相关的函数可能被有效地优化。 这些复杂的函数可以是认知相关的，但问题是发展中的大脑如何有效地学习这样复杂的功能。</p>
+
+<p>小结：本节文中讨论的内容与RNN训练和学习关系密切，为了更好的理解这部分以及后面部分的内容，个人觉得需要还做一些功课。Bengio从他博士期间就开始研究RNN至今，目前可以说深度学习占领着机器学习的半壁江山，而RNN则是深度学习的核心。</p>
+
+<blockquote>
+  <p>这里建议暂停一下先认真看看下面三篇paper，甚至RNN更基础的东西。</p>
+</blockquote>
+
+<p>References:</p>
+
+<p>On the difficulty of training recurrent neural networks</p>
+
+<p>Professor Forcing: A New Algorithm for Training Recurrent Networks</p>
+
+<p>Decoupled Neural Interfaces using Synthetic Gradients</p>]]></content><author><name></name></author><category term="sample-posts" /><category term="formatting" /><category term="code" /><summary type="html"><![CDATA[Toward an Integration of Deep Learning and Neuroscience]]></summary></entry><entry><title type="html">深度学习与神经科学相遇(二)</title><link href="https://jevenzh.github.io/blog/2019/meet-1/" rel="alternate" type="text/html" title="深度学习与神经科学相遇(二)" /><published>2019-10-20T15:12:00+00:00</published><updated>2019-10-20T15:12:00+00:00</updated><id>https://jevenzh.github.io/blog/2019/meet-1</id><content type="html" xml:base="https://jevenzh.github.io/blog/2019/meet-1/"><![CDATA[<!--
+This theme supports rendering beautiful math in inline and display modes using [MathJax 3](https://www.mathjax.org/) engine. You just need to surround your math expression with `$$`, like `$$ E = mc^2 $$`. If you leave it inside a paragraph, it will produce an inline expression, just like $$ E = mc^2 $$.
+
+To use display mode, again surround your expression with `$$` and place it as a separate paragraph. Here is an example:
+
+$$
+\sum_{k=1}^\infty |\langle x, e_k \rangle|^2 \leq \|x\|^2
+$$
+
+You can also use `\begin{equation}...\end{equation}` instead of `$$` for display mode math.
+MathJax will automatically number equations:
+
+\begin{equation}
+\label{eq:cauchy-schwarz}
+\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)
+\end{equation}
+
+and by adding `\label{...}` inside the equation environment, we can now refer to the equation using `\eqref`.
+
+Note that MathJax 3 is [a major re-write of MathJax](https://docs.mathjax.org/en/latest/upgrading/whats-new-3.0.html) that brought a significant improvement to the loading and rendering speed, which is now [on par with KaTeX](http://www.intmath.com/cg5/katex-mathjax-comparison.php). -->
+
+<p><a href="/blog/2019/meet-0/"> <strong>深度学习与神经科学相遇(一)</strong></a></p>
+
+<h2 id="2-大脑能够进行成本函数优化">2. 大脑能够进行成本函数优化</h2>
+<p>许多机器学习方法（如典型的监督式学习）是基于有效地函数优化，并且，使用误差的反向传播（Werbos, 1974; Rumelhart et al., 1986）来计算任意参数化函数的梯度的能力是一个很关键的突破，这在下文我们将详细描述。在假设1中，我们声称大脑也是，至少部分是，优化机（optimization machine，指具有优化函数能力的装置）。但是，究竟说大脑可以优化成本函数是什么意思呢？毕竟，许多自然界中的许多过程都可以被视为优化。例如，物理定律通常被认为是最小化一个动作的功能，而进化优化的是复制基因（replicator）在长时间尺度上的适应性。要明确的是，我们的主张是：（a）大脑在学习期间具有强大的信用分配机制，允许它通过调整每个神经元的属性以提升全局输出结果，以此来优化多层网络中的全局目标函数，以及（b）大脑具有确定哪些成本函数对应其哪些子网络的机制，即，成本函数是高度可调的，这是由进化逐步形成并与动物的生理需求相匹配。因此，大脑使用成本函数作为其发展的关键驱动力，就像现代机器学习系统一样。</p>
+
+<blockquote>
+  <p>可能部分读者在系列一中对credit assignment（信用分配）还存在疑惑，这里解释一下：信用分配问题主要考虑的是如何确定系统的整体性能的成功是由系统组件的各种贡献哪些部分决定的（Minsky，1963），这是人工智能先驱Marvin Minsky提出的，本质上应属于对目标函数优化的一部分，实际上神经网络权重调节的机制就是一直信用分配。</p>
+</blockquote>
+
+<p>为了理解这些主张的基础，我们现在必须深入了解大脑如何有效地执行大型多层网络中的信用分配的细节，以优化更为复杂的函数。我们认为大脑使用几种不同类型的优化来解决不同的问题。在一些结构中，其可以使用遗传基因预先规定的神经回路去解决仅需要基于数据即可快速学习的问题，或者可以利用局部优化以避免通过多层神经元来分配信用的需要。它还可以使用许多后天发展出来的电路结构（神经回路），允许其通过多层神经元网络执行误差的反向传播（这里误差来至于网络实际输出与真实期望值之间的差距），这个过程使用生物学上实际存在的机制是可以实现的 - 曾经一度被广泛认为是不具有生物学可解释性的（Crick, 1989; Stork, 1989）。潜在的此类机制包括：以常规的方式反向传播误差导数（gradient，梯度）的神经电路，以及提供对梯度进行有效估计（gradient approximation，最近也有突破，避免了直接从目标函数开始求导计算）的神经回路，即快速计算成本函数对于任何给定连接权重的近似梯度。最后，大脑可以利用某些特定的神经生理学方面的算法，例如神经脉冲的时间依赖可塑性（spike timing dependent plasticity）、树突计算（dendritic computation）、局部兴奋性抑制网络或其他性质，以及更高级别大脑系统的综合性质。这样的机制可以允许学习能力甚至超过当前基于反向传播的网络。</p>
+
+<h3 id="21-无多层信用分配的局部自组织与优化">2.1 无多层信用分配的局部自组织与优化</h3>
+<p>不是所有的学习过程都需要一个通用的优化机制，如梯度下降。许多关于神经皮质的理论（George and Hawkins, 2009; Kappel et al., 2014）强调潜在的自组织和无监督的学习属性，可以消除多层反向传播的需要。 根据突触前后活动的相关性来调整权重的神经元Hebbian可塑性理论已经被很好的确立。Hebbian可塑性（Miller and MacKay, 1994）有很多版本，例如，加入非线性（Brito and Gerstner, 2016），可以引发神经元之间的不同形式的相关和竞争，导致自我组织（self-organized）的眼优势柱（ocular dominance columns）、自组织图和定向列形成（Miller et al., 1989; Ferster and Miller, 2000）。通常这些类型的局部自组织也可以被视为优化成本函数：例如，某些形式的Hebbian可塑性可以被视为提取输入的主要分量，这最小化重建误差（Pehlevan and Chklovskii, 2015） 。</p>
+
+<p>Auto-encoders 这类人工神经网络就是上述功能的代表。
+为了生成复杂的具有时间关联的学习模式，大脑还可以实现任何与不需要通过多层网络的完全反向传播等效的其他形式的学习。例如，“液体状态机”（Maass et al., 2002）或“回波状态机（echo state）”（Jaeger and Haas, 2004）是随机连接的复现网络（recurrent net），其可形成随机的基础滤波器集合（也称为“库滤波器），并利用可调谐的读出层权重来学习。体现混沌（chaotic）和自发动力（spontaneous dynamics）的变体甚至可以通过将输出层结果反馈到网络中并抑制混沌活动（chaotic activity ）来训练（Sussillo and Abbott, 2009）。仅学习读出层使得优化问题更简单（实际上，等价于监督学习的回归）。此外，回波状态网络可以通过强化学习以及监督学习来训练（Bush, 2007; Hoerzer et al., 2014）。随机非线性滤波器的储层（reservoirs）是对许多神经元的多样化、高维度、混合选择性调谐特性的一种解释，例如这种现象存在与大脑前额叶皮质中（Enel et al., 2016）。其他学习规则去仅修改随机网络内部的一部分突触的变体，正发展成为生物短期记忆（working memory）和序列生成的模型（Rajan et al., 2016）。</p>
+
+<p>这段读起来非常吃力，但值得注意的是其中提到的只对输出层进行无监督训练的方式，是否一定能使优化变得简单呢？可以尝试做实验验证一下。另外，局部自组织，也可理解为“局部无监督学习”。</p>
+
+<h3 id="22-优化的生物学实现">2.2 优化的生物学实现</h3>
+<p>我们认为上述局部自组织的机制可能不足以解释大脑的强大学习表现（Brea and Gerstner, 2016）。 为了详细说明在大脑中需要有效的梯度计算方法，我们首先将反向传播置于其计算的上下文环境中（Hinton, 1989; Baldi and Sadowski, 2015）。 然后我们将解释大脑如何合理地实现梯度下降的近似。</p>
+
+<blockquote>
+  <p>这里厉害了，gradient approximation （梯度近似）是深度学习里最迫切需要解决的问题，因为这样将大大减少对计算资源的消耗。</p>
+</blockquote>
+
+<h4 id="221-多层神经网络对高效梯度下降的需求">2.2.1 多层神经网络对高效梯度下降的需求</h4>
+
+<p>执行成本函数优化的最简单的机制有时被称为“旋转”算法，或更技术上称为“串扰”。这种机制通过以小增量扰动（即“twiddling”） 网络中的一个权重，以及通过测量网络性能（对比成本函数的变化，相对于未受干扰的权重）来验证改进。 如果改进是显著的，扰动被用作权重的变化方向; 否则，权重沿相反方向改变（或根本不改变）。 因此串行扰动是对成本“coordinate descent”的方法，但是它是缓慢的并且需要全局协调：每个突触按顺序被扰动而要求其他保持固定。</p>
+
+<p>总的来说，twiddling思想是比较简单的，但是在全局范围实现却很困难，并不是一个可行的解决方案。
+另一方面，自然地我们会想到全局权重扰动（或平行扰动）即同时扰动网络中的所有权重。 它能够优化小型网络以执行任务，但通常引发高方差。 也就是说，梯度方向的测量是有噪声的，并且其在不同扰动之间剧烈变化，因为权重对成本函数的影响被所有其他权重的变化掩蔽，然而只有一个标量反馈信号指示成本的变化。 对于大型网络，全局权重扰动是非常低效的。 事实上，如果时间测量计数网络从输入到输出传播信息的次数，则并行和串行扰动以大致相同的速率学习（Werfel et al., 2005）。</p>
+
+<p>上述的过程，在反向传播过程中形成了一对多（目标函数标量变化对应多种可能的权重变化）的映射关系，这是任何一般意义上的函数都无法拟合的（信息不能被完全学习），因为这种映射不属于函数。
+一些效率增益可以通过扰乱神经活动而不是突触权重来实现，遵循神经突触的任何长程效应通过神经元介导的事实。就像在权重扰动中，而不同于串扰的是，最小的全局协调是必须的：每个神经元仅需要接收指示全局成本函数的反馈信号。在假定所有神经元或所有权重分别被扰动并且它们在相同频率处被扰动的假设下，节点扰动梯度估计的方差远小于权重扰动的方差。在这种情况下，节点扰动的方差与网络中的细胞数量成比例，而不是突触的数量。</p>
+
+<p>所有这些方法都是缓慢的，不是由于对所有权重的串行迭代所需的时间复杂度大，就是对于低信噪比梯度估计的平均所需的时间复杂度大。然而，他们的信誉（credit），这些方法都不需要超过关于局部活动和单一全局成本信号的知识。大脑中的真实神经回路似乎具有编码与实现那些算法相关的信号的机制（例如，可扩散神经调节器）。在许多情况下，例如在强化学习中，基于未知环境的交互计算的成本函数不能直接进行微分，并且代理（agent，智能代理，强化学习中的术语）不得不部署聪明的twiddling以在系统的某个级别进行探索（Williams, 1992）。</p>
+
+<p>这个方法对于不可微的目标函数是非常有用的，在我的知识范围内，目前还没有发现深度学习有对不可微分的目标函数探索过。但如上文所述，这是非常缓慢的，可能也只适合在强化学习（reinforcement learning）中使用。在深度强化学习中（比如AlphaGo）可否使用不可微分的目标函数呢？值得探索
+相反，反向传播通过基于系统的分层结构计算成本函数对每个权重的灵敏度来工作。 相对于最后一层的成本函数的导数可以用于计算关于倒数第二层的成本函数的导数，等等，一直到最早的输入层。 可以快速计算反向传播，并且对于单个输入 - 输出模式，其在其梯度估计中不存在方差（variance = 0）。 反向传播的梯度对于大型系统而言比对于小系统没有更多的噪声，因此可以使用强大计算能力有效地训练深而宽的架构。</p>
+
+<blockquote>
+  <p>这段基本解释了目前的深度神经网络为什么使用BP可以被有效训练。</p>
+</blockquote>]]></content><author><name></name></author><category term="sample-posts" /><category term="formatting" /><category term="math" /><summary type="html"><![CDATA[an example of a blog post with some math]]></summary></entry><entry><title type="html">深度学习与神经科学相遇(一)</title><link href="https://jevenzh.github.io/blog/2019/meet-0/" rel="alternate" type="text/html" title="深度学习与神经科学相遇(一)" /><published>2019-09-28T21:01:00+00:00</published><updated>2019-09-28T21:01:00+00:00</updated><id>https://jevenzh.github.io/blog/2019/meet-0</id><content type="html" xml:base="https://jevenzh.github.io/blog/2019/meet-0/"><![CDATA[<h2 id="引言">引言</h2>
+<p>计算神经科学专注于计算的详细实现，研究神经编码、动力学和电路。然而，在机器学习中，人工神经网络倾向于避开精确设计的代码，动力学或电路，有利于成本函数的强力优化（暴力搜索），通常使用简单和相对均匀的初始架构。在机器学习中，近期的两个发展方向创造了连接这些看似不同观点的机会。首先，使用结构化体系架构，包括用于注意力机制，递归和各种形式的短期和长期存储器存储的专用系统（Specialized System）。第二，成本函数和训练过程变得更加复杂，并且随着时间的推移而变化。在这里我们根据这些想法思考大脑。我们假设（1）大脑优化成本函数，（2）成本函数是多样的且在不同的发展阶段大脑不同位置的成本函数是不同的，和（3）优化操作是在一个由行为预先架构好的、与对应计算问题相匹配的框架内执行。为了支持这些假设，我们认为通过多层神经元对可信度分配（Credit Assignment）的一系列实现是与我们当前的神经电路知识相兼容的，并且大脑的一些专门系统可以被解释为对特定问题实现有效的优化。通过一系列相互作用的成本函数，这样非均匀优化的系统使学习过程变得数据高效，并且精确地针对机体的需求。我们建议一些神经科学的研究方向可以寻求改进和测试这些假设。</p>
+
+<p>这里提到的相互作用的成本函数非常有趣，在目前的深度学习领域，使用多目标函数的学习任务包括multi-task learning，transfer learning，adversarial generative learning等，甚至一些带约束条件的优化问题都可以一定程度上看做是多目标函数的。（“目标函数”是旨在最小化成本的函数，论文中使用成本函数，而所有的智能学习过程都是旨在降低各种成本函数值，比较普遍地人们会使用“信息熵”来作为量化标准，那么学习就可以看做是降低不确定性的行为）更有趣的是怎么相互作用？相互作用的目标函数对学习过程有怎样的帮助？</p>
+
+<h3 id="1-介绍">1. 介绍</h3>
+<p>今天的机器学习和神经科学使用的并不是同一种“语言”。 脑科学发现了一系列令人眼花缭乱的大脑区域（Solari and Stoner, 2011）、细胞类型、分子、细胞状态以及计算和信息存储的机制。 相反，机器学习主要集中在单一原理的实例化：函数优化。 它发现简单的优化目标，如最小化分类误差，可以导致在在多层和复现（Recurrent）网络形成丰富的内部表示和强大的算法能力（LeCun et al., 2015; Schmidhuber, 2015）。 这里我们试图去连接这些观点。</p>
+
+<p>如今在机器学习中突出的人工神经网络最初是受神经科学的启发（McCulloch and Pitts, 1943）。虽然此后神经科学在机器学习继续发挥作用（Cox and Dean, 2014），但许多主要的发展都是以有效优化的数学为基础，而不是神经科学的发现（Sutskever and Martens, 2013）。该领域从简单线性系统（Minsky and Papert, 1972）到非线性网络（Haykin, 1994），再到深层和复现网络（LeCun et al., 2015; Schmidhuber, 2015）。反向传播误差（Werbos, 1974, 1982; Rumelhart et al., 1986）通过提供一种有效的方法来计算相对于多层网络的权重的梯度，使得神经网络能够被有效地训练。训练神经网络的方法已经改进了很多，包括引入动量的学习率，更好的权重矩阵初始化，和共轭梯度等，发展到当前使用分批随机梯度下降（SGD）优化的网络。这些发展与神经科学并没有明显的联系。</p>
+
+<p>然而，我们将在此论证，神经科学和机器学习都已经发展成熟到了可以再次“收敛”（交织）的局面。 机器学习的三个方面在本文所讨论的上下文中都显得特别重要。 首先，机器学习侧重于成本函数的优化（见Figure 1）。
+<img src="https://pic4.zhimg.com/80/v2-0f3b3eb5ac1a1bbd0a58d8c895bf5d77_1440w.jpg" /></p>
+
+<p>Figure 1. 传统人工神经网络和类脑神经网络设计之间的假设差异。 （A）在常规深度学习中，监督训练基于外部提供的标记数据。 （B）在大脑中，网络的监督训练仍然可以通过对误差信号的梯度下降发生，但是该误差信号必须来自内部生成的成本函数。这些成本函数本身是由遗传基因和后天学习所指定的神经模块计算而来。内部生成的成本函数创建heuristics（这个实在不好翻译，“启发”有些抽象，类似于元信息，大家意会吧），用于引导更复杂的学习。例如，识别面部的区域可以首先使用简单的heuristic来训练以来检测面部，这种heuristic就比如是在直线之上存在两个点，然后进一步训练以使用来自无监督学习的表示结合来自其他与社交奖励处理相关的大脑区域的错误信号来区分显著的面部表情。 （C）内部生成的成本函数和错误驱动的神经皮质深层网络经过训练形成包含几个专门系统的较大架构的一部分。虽然可训练皮层区域在这里被示意为前馈神经网络，但是LSTM或其他类型的recurrent网络可能才是更精确的比喻，并且许多神经元和网络性质例如神经脉冲、树突计算、神经调节、适应和稳态可塑性、定时依赖性可塑性、直接电连接、瞬时突触动力、兴奋/抑制平衡、自发振荡活动、轴突传导延迟（Izhikevich,2006）等将影响这些网络学习的内容和方式。</p>
+
+<p>这里说到的“来自无监督学习的表示”可以用人工智能里的知识表示来理解，来自大脑其他区域的错误信号也是一种表示，所以他们可以结合。深度学习中我们用实值张量来表示知识，个人认为knowledge representation是智能形成最基础的核心之一。C中描述的结构与《On Intelligence》中作者提到的”柱状体“神经网络非常类似。结尾的一大串神经动力学名词真是又一次让我深深感受到自己的无知…</p>
+
+<p>第二，近来在机器学习中的工作开始引入复杂的成本函数：在层和时间上不一致的成本函数，以及由网络的不同部分之间的交互产生的那些函数。 例如，引入低层的时间相干性（空间上非均匀成本函数）的目标改进了特征学习（Sermanet and Kavukcuoglu, 2013），成本函数计划（时间上非均匀成本函数）改进了泛化能力（Saxe et al., 2013; Goodfellow et al., 2014b; Gülçehre and Bengio, 2016）以及对抗网络 - 内部交互作用产生的成本函数的一个例子 - 允许生成式模型基于梯度训练（Goodfellow et al., 2014a）。 更容易训练的网络正被用于提供“提示”，以帮助引导更强大的网络的训练（Romero et al., 2014）。</p>
+
+<p>第三，机器学习也开始多样化进行优化的架构。 它引入了具有多重持久状态的简单记忆细胞（Hochreiter and Schmidhuber, 1997; Chung et al., 2014），更复杂的基本计算结构单元如“胶囊”和其他结构（Delalleau and Bengio, 2011; Hinton et al., 2011; Tang et al., 2012; Livni et al., 2013），内容可寻址性（Graves et al., 2014; Weston et al., 2014）和位置可寻址存储器（Graves et al., 2014），另外还有指针 （Kurach et al., 2015）和硬编码算术运算（Neelakantan et al., 2015）。</p>
+
+<p>这三个想法到目前为止在神经科学中没有受到很多关注。 因此，我们将这些想法形成为关于大脑的三个假设，检查它们的证据，并且描绘可以如何测试它们的实验。 但首先，我们需要更准确地陈述假设。</p>
+
+<p>1.1 假设1 – 大脑进行成本函数优化
+连接两个领域的中心假设是，像许多机器学习系统一样，生物系统能够优化成本函数。成本函数的想法意味着大脑区域中的神经元可以以某种方式改变它们的属性，例如它们的突触的属性，使得它们在做任何成本函数定义为它们的角色时更好。人类行为有时在一个领域中达到最优，例如在运动期间（Körding, 2007），这表明大脑可能已经学习了最佳策略。受试者将他们的运动系统的能量消耗最小化（Taylor and Faisal, 2011），并且使他们的身体的风险和损害最小化，同时最大化财务和运动获益。在计算上，我们现在知道轨迹的优化为非常复杂的运动任务提出了非常不错的解决方案（Harris and Wolpert, 1998; Todorov and Jordan, 2002; Mordatch et al., 2012）。我们认为成本函数优化更广泛地发在大脑使用的内部表示和其他处理过程之中。重要的是，我们还建议这需要大脑在多层和recurrent网络中具备有效的信用分配（credit assignment，感觉翻译成中文还是有些奇怪）机制。</p>
+
+<p>1.2 假设2 – 不同的发展阶段中不同大脑区域的成本函数不同
+第二个假设的另一种表达是：成本函数不需要是全局的。 不同脑区域中的神经元可以优化不同的事物，例如，运动的均方误差、视觉刺激中的惊喜或注意分配。 重要的是，这样的成本函数可以在局部大脑区域生成。 例如，神经元可以局部评估其输入的统计模型的质量（Figure1B）。 或者，一个区域的成本函数可以由另一个区域生成。 此外，成本函数可以随时间改变，例如，神经网络先指导小孩早期理解简单的视觉对比度，稍后再进行面部识别。 这可以允许发展中的大脑根据更简单的知识来引导更复杂的知识。 大脑中的成本函数是非常复杂的，并且被安排成在不同地区和不同发展之间变化。</p>
+
+<p>1.3 假设3 – 专门系统提供关键计算问题上的高效解
+第三个认识是：神经网络的结构很重要。信息在不同大脑区域流动的模式似乎有根本性差异的，这表明它们解决不同的计算问题。一些脑区是高度recurrent的，可能使它们被预定为短期记忆存储（Wang, 2012）。一些区域包含能够在定性不同的激活状态之间切换的细胞类型，例如响应于特定神经递质的持续发射模式与瞬时发射模式（Hasselmo, 2006）。其他区域，如丘脑似乎有来自其他区域的信息流经它们，也许允许他们确定信息路由（Sherman, 2005）。像基底神经节的区域参与强化学习和分离决定的门控（Doya, 1999; Sejnowski and Poizner, 2014）。正如每个程序员所知，专门的算法对于计算问题的有效解决方案很重要，并且大脑可能会很好地利用这种专业化（Figure1 C）。</p>
+
+<p>这些想法受到机器学习领域的最新进展的启发，但我们也认为大脑与今天的机器学习技术有很大的不同。特别是，世界给我们一个相对有限的信息量以让我们可以用于监督学习（Fodor and Crowther, 2002）。有大量的信息可用于无人监督的学习，但没有理由假设会存在一个通用的无监督算法，无论多么强大，将按人们需要知道的顺序精确学习人类需要知道的事情。因此，从进化的角度来看，使得无监督学习解决“正确”问题的挑战是找到一系列成本函数，其将根据规定的发展阶段确定性地建立电路和行为，使得最终相对少量的信息足以产生正确的行为。例如，一个成长中的鸭子跟随（Tinbergen, 1965）其父母的行为印记模板，然后使用该模板来生成终级目标，帮助它开发其他技能，如觅食。</p>
+
+<p>根据上述内容和其他研究（Minsky, 1977; Ullman et al., 2012），我们认为（suggest）许多大脑的成本函数产生于这样的内部自举过程。事实上，我们提出生物发展和强化学习实际上可以程序化实现生成一系列成本函数，精确预测大脑内部子系统以及整个生物体面临的未来需求。这种类型的发展程序化地引导生成多样化和复杂的成本函数的内部基础设施，同时简化大脑的内部过程所面临的学习问题。除了诸如家族印记的简单任务之外，这种类型的引导可以扩展到更高的认知，例如，内部产生的成本函数可以训练发育中的大脑正确地访问其存储器或者以随后证明有用的方式组织其动作。这样的潜在引导机制在无监督和强化学习的背景下运行，并且远远超出当今机器学习、人工智能课程学习的理念（Bengio et al., 2009）。</p>
+
+<p><strong>这段绝对是至今我所看过的人工智能文献里最精彩的部分</strong>
+本文的其余部分，我们将阐述这些假设。 首先，我们将认为局部和多层优化，出乎意料地与我们所知道的大脑兼容。 第二，我们将认为成本函数在大脑区域和不同时间的变化是不同的，并且描述了成本函数如何以协调方式交互以允许引导复杂函数。 第三，我们将列出一系列需要通过神经计算解决的专门问题，以及具有似乎与特定计算问题匹配的结构的脑区域。 然后，我们讨论上述假设的神经科学和机器学习研究方法的一些影响，并草拟一组实验来测试这些假设。 最后，我们从演化的角度讨论这个架构。</p>]]></content><author><name></name></author><category term="sample-posts" /><category term="external-services" /><summary type="html"><![CDATA[Toward an Integration of Deep Learning and Neuroscience]]></summary></entry></feed>
