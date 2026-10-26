@@ -900,3 +900,239 @@ a:focus-visible,
     display: none;
   }
 }
+
+/* Matrix wake-up — only while html.booting */
+
+.boot-intro {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  padding:
+    max(1.25rem, env(safe-area-inset-top))
+    max(1.25rem, env(safe-area-inset-right))
+    max(1.5rem, env(safe-area-inset-bottom))
+    max(1.25rem, env(safe-area-inset-left));
+  background:
+    radial-gradient(ellipse at center, rgba(5, 8, 5, 0.12) 0%, rgba(5, 8, 5, 0.62) 62%, rgba(5, 8, 5, 0.88) 100%);
+  cursor: pointer;
+  overflow: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.boot-intro:focus {
+  outline: none;
+}
+
+html.booting .boot-intro,
+.boot-intro.is-leaving {
+  display: block;
+}
+
+html.booting,
+html.booting body {
+  overflow: hidden;
+}
+
+html.booting #matrix {
+  opacity: 0.82;
+}
+
+#matrix {
+  transition: opacity 0.7s ease;
+}
+
+html.booting .site-header,
+html.booting main,
+html.booting .site-footer {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.site-header,
+main,
+.site-footer {
+  transition: opacity 0.45s ease;
+}
+
+.boot-intro-inner {
+  position: absolute;
+  top: max(14vh, 4.25rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100% - 2.5rem, 40rem);
+}
+
+.boot-kicker {
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid rgba(0, 255, 102, 0.28);
+}
+
+.boot-stream {
+  font-family: var(--font-term), var(--font-cjk);
+  font-size: clamp(1.45rem, 4.6vw, 2.15rem);
+  line-height: 1.22;
+  color: var(--green);
+  text-shadow: 0 0 8px var(--green-glow);
+}
+
+.boot-line {
+  min-height: 1.22em;
+}
+
+.boot-line.is-wake .boot-line-text {
+  color: #eaffe8;
+  text-shadow: 0 0 10px var(--green-glow), 0 0 2px #eaffe8;
+  animation: wake-flicker 0.12s steps(2, end) 3;
+}
+
+.boot-line.is-dim .boot-line-text {
+  color: #7dffb0;
+}
+
+.boot-line.is-rabbit {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 0.45rem 0 0.2rem;
+  min-height: 0;
+}
+
+.boot-line-copy {
+  display: inline;
+}
+
+.boot-rabbit-art {
+  margin: 0;
+  font-family: var(--font-term), monospace;
+  font-size: 0.95em;
+  line-height: 0.95;
+  color: #f4fff6;
+  text-shadow:
+    0 0 6px #ffffff,
+    0 0 16px rgba(0, 255, 102, 0.95);
+  flex: 0 0 auto;
+  animation: rabbit-glow 1s ease-out 1;
+}
+
+.boot-line.is-rabbit .boot-line-text {
+  color: #f7fff8;
+  text-shadow:
+    0 0 8px #ffffff,
+    0 0 18px rgba(0, 255, 102, 0.8);
+}
+
+.boot-line.is-cmd .boot-line-text {
+  color: var(--cyan);
+}
+
+.boot-line.is-ok .boot-line-text {
+  color: var(--green-dim);
+}
+
+.boot-line.is-id .boot-line-text {
+  color: var(--text-bright);
+  text-shadow: 0 0 12px var(--green-glow);
+}
+
+.boot-cursor {
+  color: var(--green);
+  margin-left: 0.06em;
+}
+
+.boot-skip-hint {
+  position: absolute;
+  left: max(1.25rem, env(safe-area-inset-left));
+  right: max(1.25rem, env(safe-area-inset-right));
+  bottom: max(1.15rem, env(safe-area-inset-bottom));
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-term), var(--font-cjk);
+  font-size: clamp(1.05rem, 3.2vw, 1.35rem);
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.boot-intro.is-leaving {
+  animation: boot-fade 0.42s ease forwards;
+  pointer-events: none;
+}
+
+.boot-intro.is-done {
+  display: none !important;
+}
+
+html.boot-skip .site-header,
+html.boot-skip main,
+html.boot-skip .site-footer,
+html.boot-skip #matrix {
+  transition: none !important;
+}
+
+@keyframes wake-flicker {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes rabbit-glow {
+  0% {
+    color: #ffffff;
+    filter: brightness(1.7);
+  }
+  100% {
+    color: #e7ffe8;
+    filter: brightness(1);
+  }
+}
+
+@keyframes boot-fade {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .boot-intro-inner {
+    top: max(10vh, 3.5rem);
+  }
+
+  .boot-line.is-rabbit {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.booting .site-header,
+  html.booting main,
+  html.booting .site-footer {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  html.booting,
+  html.booting body {
+    overflow: auto !important;
+  }
+
+  .boot-intro {
+    display: none !important;
+  }
+
+  .site-header,
+  main,
+  .site-footer,
+  #matrix {
+    transition: none !important;
+  }
+
+  .boot-line.is-wake .boot-line-text,
+  .boot-rabbit-art,
+  .boot-intro.is-leaving {
+    animation: none !important;
+  }
+}
