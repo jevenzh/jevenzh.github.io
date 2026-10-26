@@ -6,6 +6,22 @@
   <meta name="description" content="Jeven（张家伟）— 成都 · AI Engineering Manager · 工业级 AI 与落地" />
   <meta name="author" content="Jeven (张家伟)" />
   <title>root@jeven:~# whoami</title>
+  <script>
+    (function () {
+      try {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (window.sessionStorage.getItem("jeven-boot-seen") === "1") return;
+      } catch (e) {}
+      document.documentElement.classList.add("booting");
+    })();
+  </script>
+  <style>
+    html.booting,
+    html.booting body { overflow: hidden }
+    html.booting .site-header,
+    html.booting main,
+    html.booting .site-footer { opacity: 0 }
+  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
@@ -15,6 +31,14 @@
   <canvas id="matrix" aria-hidden="true"></canvas>
   <div class="crt" aria-hidden="true"></div>
   <div class="scanlines" aria-hidden="true"></div>
+
+  <div id="boot-intro" class="boot-intro" role="dialog" aria-modal="true" aria-labelledby="boot-skip-hint">
+    <div class="boot-intro-inner">
+      <p class="boot-kicker frame-label">┌─ matrix.boot ─┐</p>
+      <div id="boot-stream" class="boot-stream" aria-hidden="true"></div>
+    </div>
+    <p id="boot-skip-hint" class="boot-skip-hint">&gt; 点击或按任意键跳过</p>
+  </div>
 
   <a class="skip-link" href="#main">跳到正文</a>
 
@@ -90,7 +114,7 @@
                 <span class="prompt">$</span> 兼具深度算法功底与一线交付能力，擅长把前沿研究做成可规模化的产品、专利与可量化业务成果。方向覆盖 NLP、ASR、CV 与大语言模型；曾在保险科技与生物信号 / 医疗健康场景把模型推到生产。
               </p>
               <p>
-                目前在 <strong>武田（Takeda）</strong> 任 <strong>AI Engineering Manager</strong>，推进制药企业环境下的 AI 落地——可用性、合规与业务闭环优先于演示。此前在 <strong>友邦保险 AIA TSS</strong> 任高级研发经理，主导集团首个生产级 GenAI 等旗舰落地；再早带领 Neurogin 数据科学与算法团队从 0 到 1，并在 Nuance、数蕊科技一线做 ASR 与医疗 NLP。
+                目前在 <strong>武田（Takeda）</strong> 任 <strong>AI Engineering Manager</strong>，推进制药企业环境下的 AI 落地——可用性、合规与业务闭环优先于演示。此前在 <strong>友邦保险 AIA TSS</strong> 任高级研发经理，主导集团首个生产级 GenAI 等旗舰落地；再早带领 Neurogin 数据科学与算法团队从 0 到 1，并在 Nuance、数睿科技一线做 ASR 与医疗 NLP。
               </p>
               <p class="muted">
                 侧边早期推进 Rockbarra（非市场战略教育 + 地缘风险情报/预案咨询）。业余骑行，喜欢 self-hosting。
@@ -186,7 +210,7 @@
                 <span class="badge">[2016–18]</span>
                 <span class="place">杭州 · MAR 2016 — JUN 2018</span>
               </div>
-              <h3>MedDataQuest（数蕊科技）· NLP 研究工程师</h3>
+              <h3>MedDataQuest（数睿科技）· NLP 研究工程师</h3>
               <ul class="xp-bullets">
                 <li>医疗文本结构化，支撑智能电子病历分析引擎；NER F1 达 92.3%。</li>
                 <li>TensorFlow / Keras / Deeplearning4j 完成实体识别、语义关系抽取；结合经典 ML 与本体论构建医疗知识图谱。</li>
@@ -311,6 +335,7 @@
   </footer>
 
   <script src="matrix.js"></script>
+  <script src="intro.js"></script>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
