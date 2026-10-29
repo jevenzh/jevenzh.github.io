@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Jeven（张家伟）— 成都 · AI Engineering Manager · AI Agent 架构与 hands-on 开发" />
+  <meta name="author" content="Jeven (张家伟)" />
+  <title>root@jeven:~# whoami</title>
+  <script>
+    (function () {
+      try {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (window.sessionStorage.getItem("jeven-boot-seen") === "1") return;
+      } catch (e) {}
+      document.documentElement.classList.add("booting");
+    })();
+  </script>
+  <style>
+    html.booting,
+    html.booting body { overflow: hidden }
+    html.booting .site-header,
+    html.booting main,
+    html.booting .site-footer { opacity: 0 }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <canvas id="matrix" aria-hidden="true"></canvas>
+  <div class="crt" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <div id="boot-intro" class="boot-intro" role="dialog" aria-modal="true" aria-labelledby="boot-skip-hint">
+    <div class="boot-intro-inner">
+      <p class="boot-kicker frame-label">┌─ matrix.boot ─┐</p>
+      <div id="boot-stream" class="boot-stream" aria-hidden="true"></div>
+    </div>
+    <p id="boot-skip-hint" class="boot-skip-hint">&gt; 点击或按任意键跳过</p>
+  </div>
+
+  <a class="skip-link" href="#main">跳到正文</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="#top" aria-label="回到顶部">
+        <span class="led led-on" aria-hidden="true"></span>
+        <span class="logo-text">JEVEN.SYS</span>
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="#about"><span class="prompt">$</span> about</a>
+        <a href="#experience"><span class="prompt">$</span> xp</a>
+        <a href="#edu"><span class="prompt">$</span> edu</a>
+        <a href="#side"><span class="prompt">$</span> side</a>
+        <a href="#contact"><span class="prompt">$</span> contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="top" class="hero">
+      <div class="wrap">
+        <div class="terminal-window">
+          <div class="terminal-titlebar">
+            <span class="tb-dots" aria-hidden="true">
+              <i></i><i></i><i></i>
+            </span>
+            <span class="tb-title">boot://jeven — tty1</span>
+            <span class="tb-status">
+              <span class="led led-on"></span> ONLINE
+            </span>
+          </div>
+          <div class="terminal-body hero-inner">
+            <pre class="boot-log" aria-hidden="true">[ OK ] kernel: matrix_rain.ko
+[ OK ] mount: /home/jeven
+[ OK ] service: ai-pipeline — active
+[ OK ] identity: 张家伟 (Jeven)</pre>
+            <p class="eyebrow">
+              <span class="prompt">root@jeven:~#</span> loc
+              <span class="cursor-blink">_</span>
+            </p>
+            <p class="loc-out">&gt; 成都 · Chengdu · CN</p>
+
+            <h1 class="hero-name">
+              <span class="name-zh">张家伟</span>
+              <span class="name-en" lang="en">&lt;Jeven /&gt;</span>
+            </h1>
+
+            <p class="hero-tagline">
+              <span class="prompt">$</span> 资深数据科学家 · AI 研究工程师 · 团队负责人<br />
+              <span class="muted">9+ 年工业级 AI（NLP / ASR / CV / LLM）· 3+ 年管理 · 现任武田 AI Engineering Manager，主做 AI Agent 架构与开发（工程管理占比小）。</span>
+            </p>
+
+            <div class="hero-actions">
+              <a class="btn btn-block" href="#experience">> cat ./xp.log</a>
+              <a class="btn btn-ghost" href="#contact">> mail contact</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="wrap">
+        <div class="pixel-frame">
+          <h2 class="section-title">
+            <span class="frame-label">┌─ about ─┐</span>
+            <span class="title-zh">关于</span>
+          </h2>
+          <div class="about-grid">
+            <div class="about-lead">
+              <p>
+                <span class="prompt">$</span> 兼具深度算法功底与一线交付能力，擅长把前沿研究做成可规模化的产品、专利与可量化业务成果。方向覆盖 NLP、ASR、CV 与大语言模型；曾在保险科技与生物信号 / 医疗健康场景把模型推到生产。
+              </p>
+              <p>
+                目前在 <strong>武田（Takeda）</strong> 任 <strong>AI Engineering Manager</strong>，在制药合规约束下 <strong>hands-on</strong> 做 AI Agent 系统架构与开发（MCP、A2A、集成编排、身份安全等），并兼顾工程管理（当前占比相对较小）——可用性、合规与业务闭环优先于演示。此前在 <strong>友邦保险 AIA TSS</strong> 任高级研发经理，主导集团首个生产级 GenAI 等旗舰落地；再早带领 Neurogin 数据科学与算法团队从 0 到 1，并在 Nuance、数睿科技一线做 ASR 与医疗 NLP。
+              </p>
+              <p class="muted">
+                侧边早期推进 Rockbarra（非市场战略教育 + 地缘风险情报/预案咨询）。业余骑行，喜欢 self-hosting。
+              </p>
+            </div>
+            <div class="chip-panel">
+              <p class="chip-head">> ls ./skills/ | head</p>
+              <ul class="about-chips" aria-label="技能关键词">
+                <li>AI Agent</li>
+                <li>MCP / A2A</li>
+                <li>LLM / VLM</li>
+                <li>RAG</li>
+                <li>Azure</li>
+                <li>Next.js / TS</li>
+                <li>Power Platform</li>
+                <li>MLOps</li>
+                <li>PyTorch</li>
+                <li>Python / C++</li>
+                <li>Docker / K8s</li>
+                <li>团队领导</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience" class="section section-alt">
+      <div class="wrap">
+        <div class="pixel-frame">
+          <h2 class="section-title">
+            <span class="frame-label">┌─ xp.log ─┐</span>
+            <span class="title-zh">经历</span>
+          </h2>
+          <ol class="timeline">
+            <li class="timeline-item">
+              <div class="timeline-meta">
+                <span class="badge badge-now">[NOW]</span>
+                <span class="place">成都 · 制药</span>
+              </div>
+              <h3>武田（Takeda）· AI Engineering Manager</h3>
+              <p class="role-note">主做 hands-on：AI Agent 系统架构与开发；工程管理亦负责，当前占比相对较小。</p>
+              <ul class="xp-bullets">
+                <li>设计并落地软件 / AI 架构方案；与产品、平台及领域架构协作，把需求落到可交付的 Agent / 平台能力。</li>
+                <li>Hands-on 开发 MCP Server（.NET/Azure Functions &amp; Web API，或 Next.js/TypeScript 嵌入 API routes），支持 HTTP 与 SSE，服务 Agent 通信。</li>
+                <li>集成编排：对接 Power Platform（Power Automate / Dataverse）、Azure Logic Apps / Service Bus / Event Grid；设计 A2A 消息流与实时数据管线。</li>
+                <li>身份与安全：架构 OAuth 2.0 / OIDC on-behalf-of（OBO）与 token exchange，满足武田企业安全与数据治理要求。</li>
+                <li>开发 API 与系统集成；制定编码规范、做 code review 与排障；CI/CD（GitHub Actions / Vercel）与可观测性（Azure Monitor / App Insights）。</li>
+                <li>低代码 + 少量代码：Power Platform / Logic Apps 工作流，辅以 TypeScript/C# 自定义连接器或模块，按需接入 LLM；编写 OpenAPI / runbook，带教同事。</li>
+              </ul>
+            </li>
+
+            <li class="timeline-item">
+              <div class="timeline-meta">
+                <span class="badge">[PREV]</span>
+                <span class="place">成都 · DEC 2022 — 入职武田前</span>
+              </div>
+              <h3>友邦保险 AIA TSS · 高级研发经理（R&amp;D）/ 资深数据科学家</h3>
+              <p class="role-note">研发团队负责人 + 资深 DS；集团 GenAI 从 PoC 到规模化推广。</p>
+              <ul class="xp-bullets">
+                <li>制定研发技术愿景，将公司 OKR 拆解为季度技能提升路线图；通过代码评审、学习小组与成长计划带教工程师 / DS，并落地远程容器化开发。</li>
+                <li>主导架构并交付多个 PoC 与旗舰项目：审计 AI 助手、编码智能体、企业级 RAG 平台等，推动前沿 AI 在友邦内部落地。</li>
+                <li>主导集团<strong>首个生产级 GenAI</strong>应用 <strong>Audit Genius</strong>（核心开发 + DS），从 PoC 走向集团及各业务单元规模化推广，显著提升审计流程效率。</li>
+                <li>建设内部 GenAI 工具链与可复用 DS/ML 工具包，赋能应用层项目。</li>
+                <li>评估 GPT / Llama / Mistral / GLM / DeepSeek 等模型与厂商方案；通过可行性研究为自研争取 TSS 多轮高管专项投资；为集团创新办设计并执行量化评估框架。</li>
+                <li>微调多模态 VLM：复杂文档解析 F1 从 70% 提升至 90%+，人工复核工时约 −40%。</li>
+              </ul>
+            </li>
+
+            <li class="timeline-item">
+              <div class="timeline-meta">
+                <span class="badge">[2020–22]</span>
+                <span class="place">成都 · NOV 2020 — DEC 2022</span>
+              </div>
+              <h3>Neurogin Inc · 数据科学与算法负责人</h3>
+              <ul class="xp-bullets">
+                <li>0→1 招聘并培养 9+ 名 DS / MLE；12 个月内建成完整 DS + DevOps 工具链，OKR 对齐产品—市场里程碑。</li>
+                <li>设计 EEG 全链路平台（传感器接入 → 模型服务）：技术栈选型、安全管控与数据治理；承载 &gt;4TB EEG+ECG 神经生理数据。</li>
+                <li>核心 DSP / ML：微伏级 EEG SNR +10 dB；睡眠分期 / 工作负荷 / 疼痛推理，延迟约 450 ms。</li>
+                <li>10+ 维采集质量量化基准；自动化基准工具使采集调优效率约 +50%。</li>
+                <li>主导疼痛量化模型（自适应去噪、跨被试迁移、多模态融合）；产出 5+ 项专利申请。</li>
+              </ul>
+            </li>
+
+            <li class="timeline-item">
+              <div class="timeline-meta">
+                <span class="badge">[2018–20]</span>
+                <span class="place">成都 · JUL 2018 — NOV 2020</span>
+              </div>
+              <h3>Nuance Inc · 深度学习工程师（研发）</h3>
+              <ul class="xp-bullets">
+                <li>C++ / Python 开发维护 ASR 深度学习训练工具；改进声学建模（AM）模块；定制研发工具链 CI/CD（含 Jenkins）。</li>
+                <li>研究实现 Seq2Seq、CTC、RNN-T、Transformer 等模型；独立完成 iVector 声纹特征训练与聚类，支撑说话人识别。</li>
+              </ul>
+            </li>
+
+            <li class="timeline-item">
+              <div class="timeline-meta">
+                <span class="badge">[2016–18]</span>
+                <span class="place">杭州 · MAR 2016 — JUN 2018</span>
+              </div>
+              <h3>MedDataQuest（数睿科技）· NLP 研究工程师</h3>
+              <ul class="xp-bullets">
+                <li>医疗文本结构化，支撑智能电子病历分析引擎；NER F1 达 92.3%。</li>
+                <li>TensorFlow / Keras / Deeplearning4j 完成实体识别、语义关系抽取；结合经典 ML 与本体论构建医疗知识图谱。</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="edu" class="section">
+      <div class="wrap">
+        <div class="pixel-frame">
+          <h2 class="section-title">
+            <span class="frame-label">┌─ edu.db ─┐</span>
+            <span class="title-zh">教育</span>
+          </h2>
+          <ul class="edu-list">
+            <li>
+              <span class="edu-degree">MSc Computer Science</span>
+              <span class="edu-school">University of Liverpool · Distinction</span>
+              <span class="edu-years">2014 — 2015</span>
+            </li>
+            <li>
+              <span class="edu-degree">BSc 应用数学</span>
+              <span class="edu-school">四川大学 Sichuan University</span>
+              <span class="edu-years">2010 — 2014</span>
+            </li>
+          </ul>
+
+          <h3 class="sub-frame">┌─ patents ─┐</h3>
+          <ul class="patent-list">
+            <li><span class="patent-id">CN115034266A</span> 一种采集脑电（EEG）信号的去噪方法、系统、装置及存储介质</li>
+            <li><span class="patent-id">CN114742116A/B</span> 一种基于神经网络模拟采集脑电（EEG）信号的方法及系统</li>
+            <li><span class="patent-id">CN114190953A</span> 一种用于脑电采集设备的脑电（EEG）信号去噪模型训练方法及系统</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="side" class="section section-alt">
+      <div class="wrap">
+        <div class="pixel-frame">
+          <h2 class="section-title">
+            <span class="frame-label">┌─ /side ─┐</span>
+            <span class="title-zh">其他</span>
+          </h2>
+          <div class="cards">
+            <article class="card block-grass">
+              <div class="block-top" aria-hidden="true"></div>
+              <h3>Rockbarra</h3>
+              <p class="card-kicker">// 联合创始 · 早期</p>
+              <p>
+                非市场战略教育，以及地缘政治风险情报与预案咨询。仍在早期推进中。
+              </p>
+            </article>
+            <article class="card block-stone">
+              <div class="block-top" aria-hidden="true"></div>
+              <h3>骑行</h3>
+              <p class="card-kicker">// 兴趣</p>
+              <p>
+                用骑行换脑子——成都周边与更远一点的路。
+              </p>
+            </article>
+            <article class="card block-obsidian">
+              <div class="block-top" aria-hidden="true"></div>
+              <h3>自建基础设施</h3>
+              <p class="card-kicker">// 兴趣</p>
+              <p>
+                Self-hosting：自己搭服务与网络（例如 VPN 等），喜欢可控、可复现的那一套。
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section">
+      <div class="wrap">
+        <div class="pixel-frame contact-block">
+          <h2 class="section-title">
+            <span class="frame-label">┌─ contact ─┐</span>
+            <span class="title-zh">联系</span>
+          </h2>
+          <p class="contact-intro">
+            <span class="prompt">$</span> 公开渠道如下。LinkedIn / X 链接待补全时可先走站点。
+          </p>
+          <ul class="contact-list">
+            <li>
+              <span class="contact-label">email</span>
+              <a href="mailto:jeven-z@hotmail.com">jeven-z@hotmail.com</a>
+            </li>
+            <li>
+              <span class="contact-label">site</span>
+              <a href="https://jevenzh.github.io" rel="noopener noreferrer" target="_blank">jevenzh.github.io</a>
+            </li>
+            <li>
+              <span class="contact-label">linkedin</span>
+              <a href="#" data-placeholder="true">添加 LinkedIn 主页 URL</a>
+              <span class="hint"># 简历未含完整 slug · 占位</span>
+            </li>
+            <li>
+              <span class="contact-label">x / twitter</span>
+              <a href="#" data-placeholder="true">添加 X / Twitter URL</a>
+              <span class="hint"># 占位</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>
+        <span class="prompt">$</span> © <span id="year"></span> Jeven · 张家伟
+        <span class="led led-on footer-led" aria-hidden="true"></span>
+        system idle
+      </p>
+      <p class="muted small"># static site · matrix+minecraft skin · no phone/address on page</p>
+    </div>
+  </footer>
+
+  <script src="matrix.js"></script>
+  <script src="intro.js"></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
