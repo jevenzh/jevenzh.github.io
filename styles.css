@@ -1146,12 +1146,43 @@ main,
 /* Responsive */
 
 @media (max-width: 980px) {
+  /* Keep the two-column workshop so Talk stays on-screen at tablet widths. */
   .workshop-stage {
     min-height: 0;
+    padding: 1rem;
+  }
+
+  .sign-board {
+    min-width: 0;
+  }
+
+  .talk-bezel,
+  .talk-screen {
+    min-height: 420px;
+  }
+
+  .obj-desk,
+  .obj-portal,
+  .plant,
+  .lamp {
+    display: none;
+  }
+
+  .about-grid,
+  .case-grid,
+  .case-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-en { font-size: 0.4rem; }
+}
+
+@media (max-width: 720px) {
+  .workshop-stage {
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     gap: 0.85rem;
-    padding: 1rem;
   }
 
   .obj,
@@ -1191,12 +1222,6 @@ main,
     display: inline-flex;
   }
 
-  .obj-group,
-  .workshop-stage {
-    flex-wrap: wrap;
-    flex-direction: row;
-  }
-
   .obj-sign,
   .talk-frame {
     flex: 1 1 100%;
@@ -1206,21 +1231,6 @@ main,
   .talk-screen {
     min-height: 380px;
   }
-
-  .obj-desk,
-  .obj-portal,
-  .plant,
-  .lamp {
-    display: none;
-  }
-
-  .about-grid,
-  .case-grid,
-  .case-grid-3 {
-    grid-template-columns: 1fr;
-  }
-
-  .nav-en { font-size: 0.4rem; }
 }
 
 @media (max-width: 640px) {
