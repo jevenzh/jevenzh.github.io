@@ -15,7 +15,7 @@
   var drops = [];
   var raf = 0;
   var last = 0;
-  var fpsInterval = 1000 / 18;
+  var fpsInterval = 1000 / 22;
   var visible = true;
 
   function resize() {
@@ -38,7 +38,7 @@
     if (elapsed < fpsInterval) return;
     last = now - (elapsed % fpsInterval);
 
-    ctx.fillStyle = "rgba(7, 10, 8, 0.1)";
+    ctx.fillStyle = "rgba(5, 8, 5, 0.08)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.font = fontSize + "px monospace";
 
@@ -47,8 +47,8 @@
       var x = i * fontSize;
       var y = drops[i] * fontSize;
       var head = Math.random() > 0.96;
-      ctx.fillStyle = head ? "#e8d5a3" : "#3dff8a";
-      ctx.globalAlpha = head ? 0.7 : 0.35 + Math.random() * 0.3;
+      ctx.fillStyle = head ? "#e8ffe8" : "#00ff66";
+      ctx.globalAlpha = head ? 0.9 : 0.55 + Math.random() * 0.35;
       ctx.fillText(ch, x, y);
       ctx.globalAlpha = 1;
 
