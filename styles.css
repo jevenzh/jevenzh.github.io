@@ -1018,10 +1018,14 @@ button:focus-visible,
   z-index: 90;
   background: #050706;
   color: var(--matrix);
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: center;
   padding: 2rem;
+}
+
+html.booting .boot-intro {
+  display: flex;
 }
 
 .boot-intro-inner {

@@ -8,14 +8,35 @@
   <title>Jeven · 张家伟</title>
   <script>
     (function () {
+      var play = false;
       try {
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-        if (window.sessionStorage.getItem("jeven-boot-seen") === "1") return;
-      } catch (e) {}
+        play = !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+        if (play) {
+          try {
+            if (window.sessionStorage.getItem("jeven-boot-seen") === "1") play = false;
+          } catch (e) {}
+        }
+      } catch (e) {
+        play = false;
+      }
+      if (!play) return;
       document.documentElement.classList.add("booting");
+      setTimeout(function () {
+        try {
+          if (!document.documentElement.classList.contains("booting")) return;
+          document.documentElement.classList.remove("booting");
+          var el = document.getElementById("boot-intro");
+          if (el) {
+            el.classList.add("is-done");
+            el.setAttribute("hidden", "");
+          }
+        } catch (e) {}
+      }, 10000);
     })();
   </script>
   <style>
+    .boot-intro { display: none !important }
+    html.booting .boot-intro:not(.is-done) { display: flex !important }
     html.booting,
     html.booting body { overflow: hidden }
     html.booting .site-header,
