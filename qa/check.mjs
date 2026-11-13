@@ -120,6 +120,19 @@ assert(
 const sampled = api.sampleGlyphs({ width: 100, height: 80 });
 assert(Array.isArray(sampled) && sampled.length === 0, "sampleGlyphs returns [] without a canvas");
 
+
+import { spawnSync } from "node:child_process";
+const boot = spawnSync(process.execPath, [path.join(root, "qa/boot-check.mjs")], {
+  encoding: "utf8"
+});
+if (boot.status !== 0) {
+  console.error(boot.stdout);
+  console.error(boot.stderr);
+  fail.push("boot overlay regression checks");
+} else {
+  ok.push("boot overlay regression checks");
+}
+
 console.log("PASS " + ok.length);
 if (fail.length) {
   console.error("FAIL " + fail.length);
