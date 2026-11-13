@@ -1,8 +1,6 @@
 /* Matrix wake-up. Skipped when prefers-reduced-motion or this tab already finished it. */
 (function () {
   var root = document.documentElement;
-  if (!root.classList.contains("booting")) return;
-
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   var overlay = document.getElementById("boot-intro");
   var stream = document.getElementById("boot-stream");
@@ -10,11 +8,15 @@
 
   function revealNow() {
     root.classList.remove("booting");
-    if (overlay) overlay.classList.add("is-done");
+    if (overlay) {
+      overlay.classList.add("is-done");
+      overlay.setAttribute("hidden", "");
+    }
     for (var i = 0; i < shells.length; i++) shells[i].inert = false;
   }
 
-  if (reduce.matches || !overlay || !stream) {
+  // Repeat visits, storage-gated skips, and missing nodes must never leave the overlay up.
+  if (!root.classList.contains("booting") || reduce.matches || !overlay || !stream) {
     revealNow();
     return;
   }
@@ -25,9 +27,9 @@
     { at: 780, dur: 640, text: "The Matrix has you.", cls: "is-dim" },
     { at: 1550, dur: 760, text: "follow the white rabbit.", cls: "is-rabbit", rabbit: true },
     { at: 2500, dur: 500, text: "> boot jeven.sys", cls: "is-cmd" },
-    { at: 3100, dur: 520, text: "[ OK ] matrix_rain.ko", cls: "is-ok" },
+    { at: 3100, dur: 520, text: "[ OK ] workshop lamps", cls: "is-ok" },
     { at: 3720, dur: 560, text: "[ OK ] identity: 张家伟", cls: "is-id" },
-    { at: 4380, dur: 500, text: "[ OK ] tty1 — ONLINE", cls: "is-ok" }
+    { at: 4380, dur: 500, text: "[ OK ] desk — ONLINE", cls: "is-ok" }
   ];
   var FADE_AT = 5300;
   var FADE_MS = 420;
@@ -72,6 +74,7 @@
     if (immediate) {
       root.classList.add("boot-skip");
       overlay.classList.add("is-done");
+      overlay.setAttribute("hidden", "");
       root.classList.remove("booting");
       return;
     }
@@ -79,6 +82,7 @@
     root.classList.remove("booting");
     setTimeout(function () {
       overlay.classList.add("is-done");
+      overlay.setAttribute("hidden", "");
     }, FADE_MS);
   }
 
