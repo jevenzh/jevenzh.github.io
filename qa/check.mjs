@@ -20,7 +20,7 @@ const talkSrc = fs.readFileSync(path.join(root, "talk.js"), "utf8");
 const intro = fs.readFileSync(path.join(root, "intro.js"), "utf8");
 const matrix = fs.readFileSync(path.join(root, "matrix.js"), "utf8");
 
-assert(html.includes('lang="zh-CN"'), "page language is zh-CN");
+assert(/<html lang="en">/.test(html), "page language defaults to en");
 assert(html.includes("张家伟"), "preserves Chinese name");
 assert(html.includes("Jeven"), "preserves English name");
 assert(html.includes("武田"), "preserves Takeda");
@@ -45,12 +45,15 @@ assert(html.includes('id="talk-heading"'), "has Talk with Jeven heading");
 assert(html.includes("talk") && html.includes("Jeven."), "talk heading words present");
 assert(html.includes('id="talk-dialog"') && html.includes('role="dialog"'), "preset talk dialog exists");
 assert(html.includes('id="talk-back"'), "dialog has Back control");
-assert(html.includes('href="#about"') && html.includes('href="#experience"'), "workshop objects link to sections");
+assert(html.includes('href="#about"') && html.includes('href="#experience"'), "section links to about and experience exist");
 assert(css.includes("prefers-reduced-motion"), "reduced-motion stylesheet present");
-assert(css.includes("--champagne") && css.includes("--brass") && css.includes("--ivory"), "gold/ivory palette present");
+assert(css.includes("--champagne") && css.includes("#050805"), "dark matrix palette with reserved gold accent");
+assert(!html.includes("section-ivory") && !css.includes("--ivory") && !css.includes("#f3f0e6"), "ivory section surfaces removed");
 assert(css.includes("#talk-particles") && css.includes("is-canvas-active"), "static heading fallback styles exist");
 assert(intro.includes("prefers-reduced-motion") && intro.includes("jeven-boot-seen"), "boot intro remains skippable");
 assert(matrix.includes("prefers-reduced-motion"), "matrix respects reduced motion");
+assert(!/#matrix\s*\{[^}]*opacity:\s*0\.1[0-9]/.test(css), "code rain is not visually suppressed to ~0.14");
+assert(/#matrix\s*\{[^}]*opacity:\s*0\.[6-9]/.test(css), "code rain stays clearly visible");
 
 const requiredFiles = [
   "index.html",
@@ -58,6 +61,7 @@ const requiredFiles = [
   "talk.js",
   "intro.js",
   "matrix.js",
+  "lang.js",
   "README.md",
   ".nojekyll",
   ".github/workflows/publish.yml"
@@ -131,6 +135,28 @@ if (boot.status !== 0) {
   fail.push("boot overlay regression checks");
 } else {
   ok.push("boot overlay regression checks");
+}
+
+const lang = spawnSync(process.execPath, [path.join(root, "qa/lang-check.mjs")], {
+  encoding: "utf8"
+});
+if (lang.status !== 0) {
+  console.error(lang.stdout);
+  console.error(lang.stderr);
+  fail.push("language and layout checks");
+} else {
+  ok.push("language and layout checks");
+}
+
+const talkRuntime = spawnSync(process.execPath, [path.join(root, "qa/talk-runtime.mjs")], {
+  encoding: "utf8"
+});
+if (talkRuntime.status !== 0) {
+  console.error(talkRuntime.stdout);
+  console.error(talkRuntime.stderr);
+  fail.push("talk runtime initialization checks");
+} else {
+  ok.push("talk runtime initialization checks");
 }
 
 console.log("PASS " + ok.length);
