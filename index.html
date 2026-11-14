@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" data-en="Jeven Zhang (张家伟) — Chengdu · AI Engineering Manager · AI agent architecture and hands-on development" data-zh="Jeven（张家伟）— 成都 · AI Engineering Manager · AI Agent 架构与 hands-on 开发" content="Jeven Zhang (张家伟) — Chengdu · AI Engineering Manager · AI agent architecture and hands-on development" />
+  <meta name="author" content="Jeven Zhang (张家伟)" />
+  <title data-en="Jeven Zhang (张家伟)" data-zh="张家伟 · Jeven">Jeven Zhang (张家伟)</title>
+  <script>
+    (function () {
+      try {
+        if (window.localStorage && window.localStorage.getItem("jeven-lang") === "zh") {
+          document.documentElement.lang = "zh-CN";
+          document.documentElement.classList.add("is-zh");
+        }
+      } catch (e) {}
+      var play = false;
+      try {
+        play = !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+        if (play) {
+          try {
+            if (window.sessionStorage.getItem("jeven-boot-seen") === "1") play = false;
+          } catch (e) {}
+        }
+      } catch (e) {
+        play = false;
+      }
+      if (!play) return;
+      document.documentElement.classList.add("booting");
+      setTimeout(function () {
+        try {
+          if (!document.documentElement.classList.contains("booting")) return;
+          document.documentElement.classList.remove("booting");
+          var el = document.getElementById("boot-intro");
+          if (el) {
+            el.classList.add("is-done");
+            el.setAttribute("hidden", "");
+          }
+        } catch (e) {}
+      }, 10000);
+    })();
+  </script>
+  <style>
+    .boot-intro { display: none !important }
+    html.booting .boot-intro:not(.is-done) { display: flex !important }
+    html.booting,
+    html.booting body { overflow: hidden }
+    html.booting .site-header,
+    html.booting main,
+    html.booting .site-footer { opacity: 0 }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Playfair+Display:ital,wght@1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="boot-intro" class="boot-intro" role="dialog" aria-modal="true" aria-labelledby="boot-skip-hint">
+    <div class="boot-intro-inner">
+      <p class="boot-kicker frame-label">┌─ matrix.boot ─┐</p>
+      <div id="boot-stream" class="boot-stream" aria-hidden="true"></div>
+    </div>
+    <p id="boot-skip-hint" class="boot-skip-hint">
+      <span class="lang-en">&gt; Click or press any key to skip</span>
+      <span class="lang-zh">&gt; 点击或按任意键跳过</span>
+    </p>
+  </div>
+
+  <a class="skip-link" href="#main"><span class="lang-en">Skip to content</span><span class="lang-zh">跳到正文</span></a>
+  <canvas id="matrix" aria-hidden="true"></canvas>
+  <div class="page-vignette" aria-hidden="true"></div>
+  <div class="page-scan" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="#top" data-i18n-aria data-en="Back to top" data-zh="回到顶部" aria-label="Back to top">
+        <span class="led led-on" aria-hidden="true"></span>
+        <span class="logo-text">JEVEN</span>
+      </a>
+      <div class="header-tools">
+        <nav class="nav" data-i18n-aria data-en="Primary" data-zh="主导航" aria-label="Primary">
+          <a href="#about"><span class="lang-en">About</span><span class="lang-zh">关于</span></a>
+          <a href="#experience"><span class="lang-en">Work</span><span class="lang-zh">经历</span></a>
+          <a href="#edu"><span class="lang-en">Education</span><span class="lang-zh">教育</span></a>
+          <a href="#side"><span class="lang-en">Side</span><span class="lang-zh">其他</span></a>
+          <a href="#contact"><span class="lang-en">Contact</span><span class="lang-zh">联系</span></a>
+        </nav>
+        <div class="lang-switch" role="group" data-i18n-aria data-en="Language" data-zh="语言" aria-label="Language">
+          <button type="button" class="lang-btn is-active" data-site-lang="en" aria-pressed="true">EN</button>
+          <button type="button" class="lang-btn" data-site-lang="zh" aria-pressed="false">中文</button>
+        </div>
+        <button type="button" class="rain-toggle" id="rain-toggle" aria-pressed="false" data-i18n-aria data-en="Pause the code rain" data-zh="暂停代码雨" aria-label="Pause the code rain">
+          <span class="rain-label-pause"><span class="lang-en">Pause rain</span><span class="lang-zh">暂停代码雨</span></span>
+          <span class="rain-label-resume" hidden><span class="lang-en">Resume rain</span><span class="lang-zh">恢复代码雨</span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="top" class="hero">
+      <div class="wrap hero-shell">
+        <div class="hero-mast">
+          <p class="hero-kicker"><span class="prompt">&gt;</span> identity<span class="cursor-blink">_</span></p>
+          <p class="hero-loc"><span class="lang-en">Chengdu · CN</span><span class="lang-zh">成都 · Chengdu · CN</span></p>
+          <h1 class="hero-name">
+            <span class="visually-hidden lang-en">Jeven Zhang, 张家伟</span>
+            <span class="visually-hidden lang-zh">张家伟, Jeven Zhang</span>
+            <span class="name-visual" aria-hidden="true">
+              <span class="name-primary lang-en" data-text="JEVEN">JEVEN</span>
+              <span class="name-family lang-en" data-text="ZHANG">ZHANG</span>
+              <span class="name-secondary lang-en">张家伟</span>
+              <span class="name-primary lang-zh" data-text="张家伟">张家伟</span>
+              <span class="name-secondary lang-zh">Jeven Zhang</span>
+            </span>
+          </h1>
+          <p class="hero-role"><span class="lang-en">AI Engineering Manager · Takeda</span><span class="lang-zh">AI Engineering Manager · 武田（Takeda）</span></p>
+        </div>
+
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="hero-lead lang-en">Hands-on AI engineering manager building production agent systems. 9+ years in industrial AI (NLP / ASR / CV / LLM), taking research into production.</p>
+            <p class="hero-lead lang-zh">主做 AI Agent 系统架构与 hands-on 开发，工程管理亦负责、当前占比相对较小。9+ 年工业级 AI（NLP / ASR / CV / LLM），把研究做成可规模化的产品与可核对的业务结果。</p>
+            <div class="hero-skills">
+              <p class="chip-head">&gt; ls ./skills/</p>
+              <ul class="about-chips" data-i18n-aria data-en="Skills" data-zh="技能关键词" aria-label="Skills">
+                <li>AI Agent</li>
+                <li>MCP / A2A</li>
+                <li>LLM / VLM</li>
+                <li>RAG</li>
+                <li>Azure</li>
+                <li>Next.js / TS</li>
+                <li>Power Platform</li>
+                <li>MLOps</li>
+                <li>PyTorch</li>
+                <li>Python / C++</li>
+                <li>Docker / K8s</li>
+                <li><span class="lang-en">Leadership</span><span class="lang-zh">团队领导</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="talk-stage" id="talk-root">
+            <p class="talk-kicker"><span class="lang-en">preset dialogue</span><span class="lang-zh">预设对话</span></p>
+            <h2 class="talk-heading" id="talk-heading"><span>talk</span> <span>with</span> <span>Jeven.</span></h2>
+            <canvas id="talk-particles" aria-hidden="true"></canvas>
+            <button type="button" class="talk-start" id="talk-start" aria-controls="talk-dialog" aria-expanded="false">
+              <span class="lang-en">&gt; START A CONVERSATION</span>
+              <span class="lang-zh">&gt; 开始一段对话</span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="hero-rail" data-i18n-aria data-en="Sections" data-zh="章节" aria-label="Sections">
+          <a href="#about"><span>01</span><span class="lang-en">About</span><span class="lang-zh">关于</span><span class="rail-mode lang-en">dossier</span><span class="rail-mode lang-zh">档案</span></a>
+          <a href="#experience"><span>02</span><span class="lang-en">Work</span><span class="lang-zh">经历</span><span class="rail-mode lang-en">system log</span><span class="rail-mode lang-zh">系统日志</span></a>
+          <a href="#edu"><span>03</span><span class="lang-en">Education</span><span class="lang-zh">教育</span><span class="rail-mode lang-en">records</span><span class="rail-mode lang-zh">记录</span></a>
+          <a href="#side"><span>04</span><span class="lang-en">Side</span><span class="lang-zh">其他</span><span class="rail-mode lang-en">notes</span><span class="rail-mode lang-zh">备注</span></a>
+          <a href="#contact"><span>05</span><span class="lang-en">Contact</span><span class="lang-zh">联系</span><span class="rail-mode lang-en">uplink</span><span class="rail-mode lang-zh">联络</span></a>
+        </nav>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="section-kicker"><span class="sec-num">01</span><span class="sec-name lang-en">About</span><span class="sec-name lang-zh">关于</span><span class="sec-mode lang-en">operator dossier</span><span class="sec-mode lang-zh">操作员档案</span></p>
+          <h2 class="section-title lang-en">From research to systems that ship</h2>
+          <h2 class="section-title lang-zh">把研究做成可落地的系统</h2>
+        </header>
+        <div class="about-grid">
+          <div class="about-lead">
+            <p class="lang-en">I combine deep algorithm work with hands-on delivery, taking research into scalable products, patents, and measurable business outcomes. The work covers NLP, ASR, computer vision, and large language models, including production systems in insurance technology and biosignal / healthcare settings.</p>
+            <p class="lang-zh">兼具深度算法功底与一线交付能力，擅长把前沿研究做成可规模化的产品、专利与可量化业务成果。方向覆盖 NLP、ASR、CV 与大语言模型；曾在保险科技与生物信号 / 医疗健康场景把模型推到生产。</p>
+            <p class="lang-en">I am currently an <strong>AI Engineering Manager</strong> at <strong>Takeda</strong>, doing <strong>hands-on</strong> AI agent architecture and development under pharmaceutical compliance constraints (MCP, A2A, orchestration, identity and security), along with engineering management. Usability, compliance, and a closed business loop come before demos. Previously I was a Senior R&amp;D Manager at <strong>AIA TSS</strong>, where I led flagship work including the group’s first production GenAI application. Earlier I built the data science and algorithm team at Neurogin from the ground up, and worked on ASR and medical NLP at Nuance and MedDataQuest (数睿科技).</p>
+            <p class="lang-zh">目前在 <strong>武田（Takeda）</strong> 任 <strong>AI Engineering Manager</strong>，在制药合规约束下 <strong>hands-on</strong> 做 AI Agent 系统架构与开发（MCP、A2A、集成编排、身份安全等），并兼顾工程管理（当前占比相对较小）——可用性、合规与业务闭环优先于演示。此前在 <strong>友邦保险 AIA TSS</strong> 任高级研发经理，主导集团首个生产级 GenAI 等旗舰落地；再早带领 Neurogin 数据科学与算法团队从 0 到 1，并在 Nuance、数睿科技一线做 ASR 与医疗 NLP。</p>
+            <p class="muted lang-en">On the side I am early in building Rockbarra (non-market strategic education and geopolitical risk intelligence / contingency advisory). I also cycle and like self-hosting.</p>
+            <p class="muted lang-zh">侧边早期推进 Rockbarra（非市场战略教育 + 地缘风险情报/预案咨询）。业余骑行，喜欢 self-hosting。</p>
+          </div>
+          <aside class="chip-panel">
+            <p class="chip-head">&gt; ls ./skills/</p>
+            <ul class="about-chips" data-i18n-aria data-en="Skills" data-zh="技能关键词" aria-label="Skills">
+              <li>AI Agent</li>
+              <li>MCP / A2A</li>
+              <li>LLM / VLM</li>
+              <li>RAG</li>
+              <li>Azure</li>
+              <li>Next.js / TS</li>
+              <li>Power Platform</li>
+              <li>MLOps</li>
+              <li>PyTorch</li>
+              <li>Python / C++</li>
+              <li>Docker / K8s</li>
+              <li><span class="lang-en">Leadership</span><span class="lang-zh">团队领导</span></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience" class="section">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="section-kicker"><span class="sec-num">02</span><span class="sec-name lang-en">Work</span><span class="sec-name lang-zh">经历</span><span class="sec-mode lang-en">chronological system log</span><span class="sec-mode lang-zh">可核对的系统日志</span></p>
+          <h2 class="section-title lang-en">Selected experience</h2>
+          <h2 class="section-title lang-zh">可以核对的工作记录</h2>
+        </header>
+
+        <article class="role-featured">
+          <div class="role-meta">
+            <span class="pill pill-now">NOW</span>
+            <p class="role-place"><span class="lang-en">Chengdu · Pharmaceutical</span><span class="lang-zh">成都 · 制药</span></p>
+            <p class="role-when"><span class="lang-en">Current</span><span class="lang-zh">在任</span></p>
+          </div>
+          <div class="role-body">
+            <h3 class="lang-en">Takeda · AI Engineering Manager</h3>
+            <h3 class="lang-zh">武田（Takeda）· AI Engineering Manager</h3>
+            <p class="role-note lang-en">Hands-on AI agent architecture and development, along with engineering management.</p>
+            <p class="role-note lang-zh">主做 hands-on：AI Agent 系统架构与开发；工程管理亦负责，当前占比相对较小。</p>
+            <ul class="xp-bullets lang-en">
+              <li>Design and deliver software / AI architecture, working with product, platform, and domain architects to turn requirements into shippable agent / platform capabilities.</li>
+              <li>Hands-on development of MCP servers (.NET/Azure Functions &amp; Web API, or Next.js/TypeScript embedded in API routes), supporting HTTP and SSE for agent communication.</li>
+              <li>Identity and security: OAuth 2.0 / OIDC on-behalf-of (OBO) and token exchange, meeting Takeda’s enterprise security and data-governance requirements.</li>
+            </ul>
+            <ul class="xp-bullets lang-zh">
+              <li>设计并落地软件 / AI 架构方案；与产品、平台及领域架构协作，把需求落到可交付的 Agent / 平台能力。</li>
+              <li>Hands-on 开发 MCP Server（.NET/Azure Functions &amp; Web API，或 Next.js/TypeScript 嵌入 API routes），支持 HTTP 与 SSE，服务 Agent 通信。</li>
+              <li>身份与安全：架构 OAuth 2.0 / OIDC on-behalf-of（OBO）与 token exchange，满足武田企业安全与数据治理要求。</li>
+            </ul>
+            <details class="role-more">
+              <summary><span class="lang-en">Technical details / full role history</span><span class="lang-zh">技术细节 / 展开完整经历</span></summary>
+              <ul class="xp-bullets lang-en">
+                <li>Integration and orchestration: Power Platform (Power Automate / Dataverse), Azure Logic Apps / Service Bus / Event Grid; A2A message flows and real-time data pipelines.</li>
+                <li>API and systems integration; coding standards, code review, and troubleshooting; CI/CD (GitHub Actions / Vercel) and observability (Azure Monitor / App Insights).</li>
+                <li>Low-code with some custom code: Power Platform / Logic Apps workflows, plus TypeScript/C# custom connectors or modules, with LLMs where needed; OpenAPI / runbooks, and coaching colleagues.</li>
+              </ul>
+              <ul class="xp-bullets lang-zh">
+                <li>集成编排：对接 Power Platform（Power Automate / Dataverse）、Azure Logic Apps / Service Bus / Event Grid；设计 A2A 消息流与实时数据管线。</li>
+                <li>开发 API 与系统集成；制定编码规范、做 code review 与排障；CI/CD（GitHub Actions / Vercel）与可观测性（Azure Monitor / App Insights）。</li>
+                <li>低代码 + 少量代码：Power Platform / Logic Apps 工作流，辅以 TypeScript/C# 自定义连接器或模块，按需接入 LLM；编写 OpenAPI / runbook，带教同事。</li>
+              </ul>
+            </details>
+          </div>
+        </article>
+
+        <ol class="role-log">
+          <li class="role-item">
+            <div class="role-meta">
+              <p class="role-when"><span class="lang-en">2022 — before Takeda</span><span class="lang-zh">2022 — 入职武田前</span></p>
+              <p class="role-place"><span class="lang-en">Chengdu · DEC 2022 until joining Takeda</span><span class="lang-zh">成都 · DEC 2022 起</span></p>
+            </div>
+            <div class="role-body">
+              <h3 class="lang-en">AIA TSS · Senior R&amp;D Manager / Senior Data Scientist</h3>
+              <h3 class="lang-zh">友邦保险 AIA TSS · 高级研发经理（R&amp;D）/ 资深数据科学家</h3>
+              <p class="role-note lang-en">Head of the R&amp;D team and senior data scientist; took group GenAI from PoC to a broader rollout.</p>
+              <p class="role-note lang-zh">研发团队负责人 + 资深 DS；集团 GenAI 从 PoC 到规模化推广。</p>
+              <ul class="xp-bullets lang-en">
+                <li>Led architecture and delivery of multiple PoCs and flagship projects — an audit AI assistant, a coding agent, an enterprise RAG platform, and others — to put frontier AI into production at AIA.</li>
+                <li>Led the group’s <strong>first production GenAI</strong> application, <strong>Audit Genius</strong> (core development + DS), from PoC to rollout across the group and business units, with a clear improvement in audit-process efficiency.</li>
+                <li>Fine-tuned multimodal VLMs: F1 on complex document parsing rose from 70% to 90%+, with about 40% less time spent on manual review.</li>
+              </ul>
+              <ul class="xp-bullets lang-zh">
+                <li>主导架构并交付多个 PoC 与旗舰项目：审计 AI 助手、编码智能体、企业级 RAG 平台等，推动前沿 AI 在友邦内部落地。</li>
+                <li>主导集团<strong>首个生产级 GenAI</strong>应用 <strong>Audit Genius</strong>（核心开发 + DS），从 PoC 走向集团及各业务单元规模化推广，显著提升审计流程效率。</li>
+                <li>微调多模态 VLM：复杂文档解析 F1 从 70% 提升至 90%+，人工复核工时约 −40%。</li>
+              </ul>
+              <details class="role-more">
+                <summary><span class="lang-en">Technical details / full role history</span><span class="lang-zh">技术细节 / 展开完整经历</span></summary>
+                <ul class="xp-bullets lang-en">
+                  <li>Set the R&amp;D technical vision and broke company OKRs into a quarterly skills roadmap; mentored engineers / data scientists through code review, study groups, and growth plans; introduced remote containerized development.</li>
+                  <li>Built an internal GenAI toolchain and reusable DS/ML toolkit for application teams.</li>
+                  <li>Evaluated models and vendor options including GPT, Llama, Mistral, GLM, and DeepSeek; used feasibility studies to secure multiple rounds of TSS executive funding for in-house work; designed and ran a quantitative evaluation framework for the group’s innovation office.</li>
+                </ul>
+                <ul class="xp-bullets lang-zh">
+                  <li>制定研发技术愿景，将公司 OKR 拆解为季度技能提升路线图；通过代码评审、学习小组与成长计划带教工程师 / DS，并落地远程容器化开发。</li>
+                  <li>建设内部 GenAI 工具链与可复用 DS/ML 工具包，赋能应用层项目。</li>
+                  <li>评估 GPT / Llama / Mistral / GLM / DeepSeek 等模型与厂商方案；通过可行性研究为自研争取 TSS 多轮高管专项投资；为集团创新办设计并执行量化评估框架。</li>
+                </ul>
+              </details>
+            </div>
+          </li>
+
+          <li class="role-item">
+            <div class="role-meta">
+              <p class="role-when">2020 — 2022</p>
+              <p class="role-place"><span class="lang-en">Chengdu · NOV 2020 — DEC 2022</span><span class="lang-zh">成都 · NOV 2020 — DEC 2022</span></p>
+            </div>
+            <div class="role-body">
+              <h3 class="lang-en">Neurogin Inc · Head of Data Science and Algorithms</h3>
+              <h3 class="lang-zh">Neurogin Inc · 数据科学与算法负责人</h3>
+              <ul class="xp-bullets lang-en">
+                <li>Hired and developed 9+ data scientists / MLEs from 0 to 1; built a complete DS + DevOps toolchain in 12 months, with OKRs aligned to product–market milestones.</li>
+                <li>Designed an end-to-end EEG platform (sensor ingest → model serving): stack selection, security controls, and data governance; it held &gt;4TB of EEG+ECG neurophysiology data.</li>
+                <li>Led pain-quantification models (adaptive denoising, cross-subject transfer, multimodal fusion); produced 5+ patent applications.</li>
+              </ul>
+              <ul class="xp-bullets lang-zh">
+                <li>0→1 招聘并培养 9+ 名 DS / MLE；12 个月内建成完整 DS + DevOps 工具链，OKR 对齐产品—市场里程碑。</li>
+                <li>设计 EEG 全链路平台（传感器接入 → 模型服务）：技术栈选型、安全管控与数据治理；承载 &gt;4TB EEG+ECG 神经生理数据。</li>
+                <li>主导疼痛量化模型（自适应去噪、跨被试迁移、多模态融合）；产出 5+ 项专利申请。</li>
+              </ul>
+              <details class="role-more">
+                <summary><span class="lang-en">Technical details / full role history</span><span class="lang-zh">技术细节 / 展开完整经历</span></summary>
+                <ul class="xp-bullets lang-en">
+                  <li>Core DSP / ML: +10 dB SNR on microvolt-level EEG; sleep staging / workload / pain inference at about 450 ms latency.</li>
+                  <li>A 10+ dimensional capture-quality benchmark; automated benchmarking improved capture-tuning efficiency by about 50%.</li>
+                </ul>
+                <ul class="xp-bullets lang-zh">
+                  <li>核心 DSP / ML：微伏级 EEG SNR +10 dB；睡眠分期 / 工作负荷 / 疼痛推理，延迟约 450 ms。</li>
+                  <li>10+ 维采集质量量化基准；自动化基准工具使采集调优效率约 +50%。</li>
+                </ul>
+              </details>
+            </div>
+          </li>
+
+          <li class="role-item">
+            <div class="role-meta">
+              <p class="role-when">2018 — 2020</p>
+              <p class="role-place"><span class="lang-en">Chengdu · JUL 2018 — NOV 2020</span><span class="lang-zh">成都 · JUL 2018 — NOV 2020</span></p>
+            </div>
+            <div class="role-body">
+              <h3 class="lang-en">Nuance Inc · Deep Learning Engineer (R&amp;D)</h3>
+              <h3 class="lang-zh">Nuance Inc · 深度学习工程师（研发）</h3>
+              <ul class="xp-bullets lang-en">
+                <li>Developed and maintained C++ / Python deep-learning training tools for ASR; improved the acoustic modeling (AM) module; customized the R&amp;D toolchain CI/CD, including Jenkins.</li>
+                <li>Implemented Seq2Seq, CTC, RNN-T, Transformer, and related models; independently completed iVector speaker-feature training and clustering for speaker recognition.</li>
+              </ul>
+              <ul class="xp-bullets lang-zh">
+                <li>C++ / Python 开发维护 ASR 深度学习训练工具；改进声学建模（AM）模块；定制研发工具链 CI/CD（含 Jenkins）。</li>
+                <li>研究实现 Seq2Seq、CTC、RNN-T、Transformer 等模型；独立完成 iVector 声纹特征训练与聚类，支撑说话人识别。</li>
+              </ul>
+            </div>
+          </li>
+
+          <li class="role-item">
+            <div class="role-meta">
+              <p class="role-when">2016 — 2018</p>
+              <p class="role-place"><span class="lang-en">Hangzhou · MAR 2016 — JUN 2018</span><span class="lang-zh">杭州 · MAR 2016 — JUN 2018</span></p>
+            </div>
+            <div class="role-body">
+              <h3 class="lang-en">MedDataQuest (数睿科技) · NLP Research Engineer</h3>
+              <h3 class="lang-zh">MedDataQuest（数睿科技）· NLP 研究工程师</h3>
+              <ul class="xp-bullets lang-en">
+                <li>Structured medical text for an intelligent EHR analysis engine; NER F1 reached 92.3%.</li>
+                <li>Built entity recognition and semantic relation extraction with TensorFlow / Keras / Deeplearning4j; combined classical ML and ontologies to build a medical knowledge graph.</li>
+              </ul>
+              <ul class="xp-bullets lang-zh">
+                <li>医疗文本结构化，支撑智能电子病历分析引擎；NER F1 达 92.3%。</li>
+                <li>TensorFlow / Keras / Deeplearning4j 完成实体识别、语义关系抽取；结合经典 ML 与本体论构建医疗知识图谱。</li>
+              </ul>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="edu" class="section">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="section-kicker"><span class="sec-num">03</span><span class="sec-name lang-en">Education</span><span class="sec-name lang-zh">教育</span><span class="sec-mode lang-en">records</span><span class="sec-mode lang-zh">记录</span></p>
+          <h2 class="section-title lang-en">Education and patents</h2>
+          <h2 class="section-title lang-zh">教育与专利</h2>
+        </header>
+        <div class="edu-grid">
+          <ul class="edu-list">
+            <li>
+              <span class="edu-degree">MSc Computer Science</span>
+              <span class="edu-school">University of Liverpool · Distinction</span>
+              <span class="edu-years">2014 — 2015</span>
+            </li>
+            <li>
+              <span class="edu-degree"><span class="lang-en">BSc Applied Mathematics</span><span class="lang-zh">BSc 应用数学</span></span>
+              <span class="edu-school"><span class="lang-en">Sichuan University</span><span class="lang-zh">四川大学 Sichuan University</span></span>
+              <span class="edu-years">2010 — 2014</span>
+            </li>
+          </ul>
+          <div>
+            <h3 class="subhead lang-en">Patents</h3>
+            <h3 class="subhead lang-zh">专利</h3>
+            <ul class="patent-list lang-en">
+              <li><span class="patent-id">CN115034266A</span> A method, system, apparatus, and storage medium for denoising collected EEG signals</li>
+              <li><span class="patent-id">CN114742116A/B</span> A method and system for simulating collected EEG signals based on a neural network</li>
+              <li><span class="patent-id">CN114190953A</span> A training method and system for an EEG-signal denoising model used in EEG acquisition devices</li>
+            </ul>
+            <ul class="patent-list lang-zh">
+              <li><span class="patent-id">CN115034266A</span> 一种采集脑电（EEG）信号的去噪方法、系统、装置及存储介质</li>
+              <li><span class="patent-id">CN114742116A/B</span> 一种基于神经网络模拟采集脑电（EEG）信号的方法及系统</li>
+              <li><span class="patent-id">CN114190953A</span> 一种用于脑电采集设备的脑电（EEG）信号去噪模型训练方法及系统</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="side" class="section">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="section-kicker"><span class="sec-num">04</span><span class="sec-name lang-en">Side</span><span class="sec-name lang-zh">其他</span><span class="sec-mode lang-en">notes</span><span class="sec-mode lang-zh">备注</span></p>
+          <h2 class="section-title lang-en">In progress, and on the road</h2>
+          <h2 class="section-title lang-zh">进行中的事，和路上的事</h2>
+        </header>
+        <div class="note-grid">
+          <article class="note">
+            <p class="note-kicker"><span class="lang-en">Early · Co-founder</span><span class="lang-zh">早期 · 联合创始</span></p>
+            <h3>Rockbarra</h3>
+            <p class="lang-en">Non-market strategic education, plus geopolitical risk intelligence and contingency advisory. Still in early development.</p>
+            <p class="lang-zh">非市场战略教育，以及地缘政治风险情报与预案咨询。仍在早期推进中。</p>
+          </article>
+          <article class="note">
+            <p class="note-kicker"><span class="lang-en">Interest</span><span class="lang-zh">兴趣</span></p>
+            <h3 class="lang-en">Cycling</h3>
+            <h3 class="lang-zh">骑行</h3>
+            <p class="lang-en">I ride to clear my head — around Chengdu and a little farther.</p>
+            <p class="lang-zh">用骑行换脑子——成都周边与更远一点的路。</p>
+          </article>
+          <article class="note">
+            <p class="note-kicker"><span class="lang-en">Interest</span><span class="lang-zh">兴趣</span></p>
+            <h3 class="lang-en">Self-hosted infrastructure</h3>
+            <h3 class="lang-zh">自建基础设施</h3>
+            <p class="lang-en">Self-hosting: I run my own services and networks (for example a VPN), and prefer setups I can control and reproduce.</p>
+            <p class="lang-zh">Self-hosting：自己搭服务与网络（例如 VPN 等），喜欢可控、可复现的那一套。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="section-kicker"><span class="sec-num">05</span><span class="sec-name lang-en">Contact</span><span class="sec-name lang-zh">联系</span><span class="sec-mode lang-en">uplink</span><span class="sec-mode lang-zh">联络通道</span></p>
+          <h2 class="section-title lang-en">Public channels</h2>
+          <h2 class="section-title lang-zh">公开渠道</h2>
+        </header>
+        <p class="contact-intro lang-en">If you need to reach me, please use the public channels below. LinkedIn and X profile links are not listed yet, so they are not included as clickable addresses.</p>
+        <p class="contact-intro lang-zh">需要联系时，优先使用下面已经公开的方式。LinkedIn / X 主页链接尚未补全，因此先不放进可点击地址。</p>
+        <ul class="contact-list">
+          <li>
+            <span class="contact-label">email</span>
+            <a href="mailto:jeven-z@hotmail.com">jeven-z@hotmail.com</a>
+          </li>
+          <li>
+            <span class="contact-label">site</span>
+            <a href="https://jevenzh.github.io" rel="noopener noreferrer" target="_blank">jevenzh.github.io</a>
+          </li>
+          <li>
+            <span class="contact-label">linkedin</span>
+            <span class="placeholder-note lang-en">Link to be added</span>
+            <span class="placeholder-note lang-zh">链接待补全</span>
+          </li>
+          <li>
+            <span class="contact-label">x / twitter</span>
+            <span class="placeholder-note lang-en">Link to be added</span>
+            <span class="placeholder-note lang-zh">链接待补全</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© <span id="year"></span> Jeven Zhang · 张家伟</p>
+      <p class="muted small lang-en">static site · no phone or address on this page</p>
+      <p class="muted small lang-zh">静态站点 · 本页不刊登电话或地址</p>
+    </div>
+  </footer>
+
+  <div class="talk-dialog-root" id="talk-dialog-root" hidden>
+    <div class="talk-backdrop" data-talk-close="true"></div>
+    <div
+      class="talk-window"
+      id="talk-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="talk-window-title"
+      tabindex="-1"
+    >
+      <div class="talk-window-bar">
+        <h2 id="talk-window-title">Talk with Jeven</h2>
+        <button type="button" class="talk-window-close" data-talk-close="true" data-i18n-aria data-en="Close" data-zh="关闭" aria-label="Close">×</button>
+      </div>
+      <div class="talk-window-body">
+        <div class="talk-lang" role="group" data-i18n-aria data-en="Language" data-zh="语言" aria-label="Language">
+          <button type="button" class="talk-lang-btn is-active" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" class="talk-lang-btn" data-lang="zh" aria-pressed="false">中文</button>
+        </div>
+        <div id="talk-panel-home" class="talk-panel">
+          <p class="talk-lead" data-i18n="lead"></p>
+          <ul class="talk-prompts" id="talk-prompts"></ul>
+        </div>
+        <div id="talk-panel-answer" class="talk-panel" hidden>
+          <h3 class="talk-answer-title" id="talk-answer-title"></h3>
+          <p class="talk-answer-body" id="talk-answer-body"></p>
+          <div id="talk-answer-extra" class="talk-answer-extra"></div>
+          <button type="button" class="talk-back" id="talk-back"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="lang.js"></script>
+  <script src="matrix.js"></script>
+  <script src="intro.js"></script>
+  <script src="talk.js"></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
