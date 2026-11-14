@@ -1,6 +1,6 @@
 /* Talk with Jeven: champagne particle text + preset bilingual answers. */
 (function (root, factory) {
-  var api = factory();
+  var api = factory(root);
   root.JevenTalk = api;
   if (typeof document !== "undefined") {
     if (document.readyState === "loading") {
@@ -11,7 +11,7 @@
       api.mount(document);
     }
   }
-})(typeof window !== "undefined" ? window : globalThis, function () {
+})(typeof window !== "undefined" ? window : globalThis, function (root) {
   var TEXT = "talk\nwith\nJeven.";
   var COLORS = ["#f3e6c0", "#e8d5a3", "#d4af37", "#c9a24a", "#b8862b", "#f7efd2"];
   var ASSEMBLE_MS = 4600;
@@ -51,7 +51,7 @@
         {
           id: "who",
           title: "Who is Jeven?",
-          body: "Jeven Zhang (张家伟), based in Chengdu. I am an AI Engineering Manager at Takeda, primarily doing hands-on AI agent architecture and development (MCP, A2A, orchestration, identity and security), with a smaller current share of engineering management."
+          body: "Jeven Zhang (张家伟), based in Chengdu. I am an AI Engineering Manager at Takeda, focused on hands-on AI agent architecture and development (MCP, A2A, orchestration, identity and security), along with engineering management."
         },
         {
           id: "work",
@@ -143,9 +143,11 @@
     return px * 0.96;
   }
 
-  function chooseFont(width) {
-    var size = Math.max(36, Math.min(84, Math.floor(width * 0.155)));
-    return "700 italic " + size + 'px \"Playfair Display\", \"Times New Roman\", serif';
+  function chooseFont(width, height) {
+    var byWidth = Math.floor(width * 0.22);
+    var byHeight = height ? Math.floor(height * 0.3) : byWidth;
+    var size = Math.max(56, Math.min(96, Math.min(byWidth, byHeight) || byWidth));
+    return "700 italic " + size + 'px "Playfair Display", "Times New Roman", serif';
   }
 
   function createParticles(points, width, height) {
@@ -160,7 +162,7 @@
         vy: (Math.random() - 0.5) * 0.6,
         tx: p.tx,
         ty: p.ty,
-        size: 1 + Math.random() * 1.4,
+        size: (width < 480 ? 1.5 : 1) + Math.random() * 1.3,
         color: COLORS[(i + Math.floor(Math.random() * 3)) % COLORS.length],
         delay: delay,
         a: 0.65 + p.a * 0.35
@@ -215,6 +217,8 @@
     ctx.globalAlpha = 1;
   }
 
+  var exposedSetLang = null;
+
   function mount(doc) {
     var reduce = prefersReducedMotion();
     var heading = doc.getElementById("talk-heading");
@@ -233,7 +237,7 @@
     var backBtn = doc.getElementById("talk-back");
     if (!heading || !startBtn || !dialogRoot || !dialog) return;
 
-    var lang = "zh";
+    var lang = (root.JevenLang && root.JevenLang.get && root.JevenLang.get() === "zh") ? "zh" : "en";
     var currentPrompt = null;
     var lastFocus = null;
     var particles = [];
@@ -331,15 +335,15 @@
       ctx = canvas.getContext("2d");
       if (!ctx) return;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var gap = cssW < 420 ? 4 : 3;
+      var gap = cssW < 520 ? 2 : 3;
       var points = sampleGlyphs({
         text: TEXT,
         width: cssW,
         height: cssH,
-        font: chooseFont(cssW),
+        font: chooseFont(cssW, cssH),
         gap: gap
       });
-      if (points.length > 1600) {
+      if (points.length > 2400) {
         points = points.filter(function (_, i) {
           return i % 2 === 0;
         });
@@ -414,18 +418,27 @@
       });
     }
 
+    function setLang(next, source) {
+      lang = next === "zh" ? "zh" : "en";
+      for (var i = 0; i < langBtns.length; i++) {
+        var on = langBtns[i].getAttribute("data-lang") === lang;
+        langBtns[i].classList.toggle("is-active", on);
+        langBtns[i].setAttribute("aria-pressed", on ? "true" : "false");
+      }
+      applyCopy();
+      if (source !== "site" && source !== "init" && root.JevenLang && typeof root.JevenLang.set === "function") {
+        if (root.JevenLang.get() !== lang) root.JevenLang.set(lang, "talk");
+      }
+    }
+
     var langBtns = dialogRoot.querySelectorAll(".talk-lang-btn");
     for (var b = 0; b < langBtns.length; b++) {
       langBtns[b].addEventListener("click", function (ev) {
-        lang = ev.currentTarget.getAttribute("data-lang") || "zh";
-        for (var i = 0; i < langBtns.length; i++) {
-          var on = langBtns[i].getAttribute("data-lang") === lang;
-          langBtns[i].classList.toggle("is-active", on);
-          langBtns[i].setAttribute("aria-pressed", on ? "true" : "false");
-        }
-        applyCopy();
+        setLang(ev.currentTarget.getAttribute("data-lang") || "en", "talk");
       });
     }
+    setLang(lang, "init");
+    exposedSetLang = setLang;
 
     doc.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && !dialogRoot.hidden) {
@@ -498,6 +511,12 @@
     sampleGlyphs: sampleGlyphs,
     createParticles: createParticles,
     stepParticle: stepParticle,
-    mount: mount
+    mount: mount,
+    setLang: function (next, source) {
+      if (typeof exposedSetLang === "function") exposedSetLang(next, source || "site");
+    },
+    getLang: function () {
+      return (root.JevenLang && root.JevenLang.get && root.JevenLang.get()) || "en";
+    }
   };
 });

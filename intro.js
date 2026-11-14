@@ -22,14 +22,15 @@
   }
 
   var rabbit = "(\u005c(\u005c\n( -.-)\no_(\")(\")";
+  var isZh = !!(root.classList.contains("is-zh") || (window.JevenLang && window.JevenLang.get() === "zh"));
   var script = [
     { at: 200, dur: 500, text: "WAKE UP, JEVEN...", cls: "is-wake" },
     { at: 780, dur: 640, text: "The Matrix has you.", cls: "is-dim" },
     { at: 1550, dur: 760, text: "follow the white rabbit.", cls: "is-rabbit", rabbit: true },
     { at: 2500, dur: 500, text: "> boot jeven.sys", cls: "is-cmd" },
-    { at: 3100, dur: 520, text: "[ OK ] workshop lamps", cls: "is-ok" },
-    { at: 3720, dur: 560, text: "[ OK ] identity: 张家伟", cls: "is-id" },
-    { at: 4380, dur: 500, text: "[ OK ] desk — ONLINE", cls: "is-ok" }
+    { at: 3100, dur: 520, text: "[ OK ] matrix_rain", cls: "is-ok" },
+    { at: 3720, dur: 560, text: isZh ? "[ OK ] identity: 张家伟" : "[ OK ] identity: Jeven Zhang", cls: "is-id" },
+    { at: 4380, dur: 500, text: "[ OK ] tty1 — ONLINE", cls: "is-ok" }
   ];
   var FADE_AT = 5300;
   var FADE_MS = 420;
