@@ -70,6 +70,11 @@ assert(/--label-min:\s*0\.8125rem/.test(css), "labels have a 13px minimum");
 assert(!/\.rail-mode\s*\{[^}]*font-size:\s*0\.7[0-8]rem/.test(css), "rail mode labels are not below 13px");
 assert(/--bg-panel:\s*rgba\([^)]*0\.9/.test(css), "reading surfaces use a strong rain veil");
 
+assert(!css.includes("17cqi") && !css.includes("22cqi"), "oversized identity scales removed");
+assert(css.includes("font-size: clamp(2.5rem, 4.4vw, 4.5rem)"), "name uses a restrained 72px desktop cap");
+assert(html.indexOf('class="hero-copy"') < html.indexOf('class="hero-mast"'), "identity and professional intro form one reading column");
+assert(html.includes("Explore my work") && html.includes("查看工作经历"), "hero work link is bilingual");
+
 function collect(tagClass) {
   const re = new RegExp(
     "<([a-zA-Z0-9]+)([^>]*\\b" + tagClass + "\\b[^>]*)>([\\s\\S]*?)</\\1>",

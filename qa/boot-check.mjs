@@ -297,6 +297,29 @@ runIntro(reduceIntro);
 assert(!reduceIntro.rootClass.contains("booting"), "intro.js reveals immediately when reduced motion");
 assert(reduceIntro.overlay.classList.contains("is-done"), "reduced motion dismisses overlay");
 
+// A repeat visitor can explicitly replay the original terminal without clearing storage.
+const replayDom = createDom({ booting: false, reduce: false });
+let replayClick;
+const replayButton = { addEventListener(type, fn) { if (type === "click") replayClick = fn; } };
+const findOriginal = replayDom.document.getElementById.bind(replayDom.document);
+replayDom.document.getElementById = (id) => id === "boot-replay" ? replayButton : findOriginal(id);
+replayDom.overlay.removeAttribute = (k) => { delete replayDom.overlay.attrs[k]; };
+const replayTimers = runIntro(replayDom);
+assert(!!replayClick, "repeat visitor has an explicit replay control");
+replayClick();
+assert(replayDom.rootClass.contains("booting"), "replay enters terminal mode despite repeat-visit skip");
+assert(!replayDom.overlay.classList.contains("is-done"), "replay clears the completed overlay state");
+assert(!("hidden" in replayDom.overlay.attrs), "replay unhides the overlay");
+assert(replayDom.shells.every((shell) => shell.inert), "replay temporarily makes background content inert");
+const replaySafety = replayTimers.find((timer) => timer.ms === 8000);
+assert(!!replaySafety, "replay retains an independent safety timeout");
+replaySafety.fn();
+assert(!replayDom.rootClass.contains("booting"), "replay safety timeout exits terminal mode");
+assert(replayDom.shells.every((shell) => !shell.inert), "replay safety timeout restores page interaction");
+assert(introSrc.includes("matrix_rain.ko") && introSrc.includes("follow the white rabbit."), "original terminal choreography and module line retained");
+assert(html.includes('id="boot-replay"') && html.includes("重播终端入场"), "replay control is present in both languages");
+assert(css.includes('"VT323"') && css.includes("top: max(14vh, 4.25rem)"), "original terminal typography and upper-screen placement restored");
+
 console.log("BOOT_PASS " + ok.length);
 if (fail.length) {
   console.error("BOOT_FAIL " + fail.length);
